@@ -31,14 +31,14 @@ export interface IStorage {
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Course operations
   getCourse(id: number): Promise<Course | undefined>;
   getAllCourses(): Promise<Course[]>;
   getCoursesByDepartment(department: string): Promise<Course[]>;
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: number, course: Partial<InsertCourse>): Promise<Course | undefined>;
-  
+
   // Enrollment operations
   getEnrollment(courseId: number, studentId: number): Promise<Enrollment | undefined>;
   getEnrollmentsByStudent(studentId: number): Promise<Enrollment[]>;
@@ -46,27 +46,27 @@ export interface IStorage {
   getPendingEnrollments(): Promise<Enrollment[]>;
   createEnrollment(enrollment: InsertEnrollment): Promise<Enrollment>;
   updateEnrollmentStatus(id: number, status: string): Promise<Enrollment | undefined>;
-  
+
   // Assignment operations
   getAssignment(id: number): Promise<Assignment | undefined>;
   getAssignmentsByCourse(courseId: number): Promise<Assignment[]>;
   createAssignment(assignment: InsertAssignment): Promise<Assignment>;
-  
+
   // Submission operations
   getSubmission(assignmentId: number, studentId: number): Promise<Submission | undefined>;
   getSubmissionsByStudent(studentId: number): Promise<Submission[]>;
   getSubmissionsByAssignment(assignmentId: number): Promise<Submission[]>;
   createSubmission(submission: InsertSubmission): Promise<Submission>;
   updateSubmissionGrade(id: number, grade: number, feedback?: string): Promise<Submission | undefined>;
-  
+
   // AI operations
   saveRecommendations(userId: number, interests: string, recommendations: any): Promise<void>;
   saveSyllabus(userId: number, courseTitle: string, courseDescription: string, duration: number, credits: number, syllabus: any): Promise<void>;
-  
+
   // Stats
   getUserStats(): Promise<{ totalUsers: number; activeStudents: number; activeLecturers: number }>;
   getCourseStats(): Promise<{ totalCourses: number; activeCourses: number }>;
-  
+
   sessionStore: session.SessionStore;
 }
 
@@ -257,7 +257,7 @@ export class DatabaseStorage implements IStorage {
     const [totalResult] = await db.select({ count: count() }).from(users);
     const [studentsResult] = await db.select({ count: count() }).from(users).where(eq(users.role, 'student'));
     const [lecturersResult] = await db.select({ count: count() }).from(users).where(eq(users.role, 'lecturer'));
-    
+
     return {
       totalUsers: totalResult.count,
       activeStudents: studentsResult.count,
@@ -268,11 +268,23 @@ export class DatabaseStorage implements IStorage {
   async getCourseStats(): Promise<{ totalCourses: number; activeCourses: number }> {
     const [totalResult] = await db.select({ count: count() }).from(courses);
     const [activeResult] = await db.select({ count: count() }).from(courses).where(eq(courses.isActive, true));
-    
+
     return {
       totalCourses: totalResult.count,
       activeCourses: activeResult.count,
     };
+  }
+}
+
+// Test database connection
+export async function testDatabaseConnection() {
+  try {
+    const result = await db.select().from(users).limit(1);
+    console.log("✅ Database connection successful");
+    return true;
+  } catch (error) {
+    console.error("❌ Database connection failed:", error);
+    return false;
   }
 }
 

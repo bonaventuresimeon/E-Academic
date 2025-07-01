@@ -36,7 +36,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -58,16 +58,12 @@ export default function AuthPage() {
     },
   });
 
-  // Handle redirect after authentication - moved to end to maintain hook order
+  // Handle redirect after authentication
   useEffect(() => {
-    if (user && !isRedirecting) {
-      setIsRedirecting(true);
-      // Use setTimeout to avoid state update during render
-      setTimeout(() => {
-        setLocation("/");
-      }, 100);
+    if (user) {
+      setLocation("/");
     }
-  }, [user, setLocation, isRedirecting]);
+  }, [user, setLocation]);
 
   const onLogin = (data: LoginFormData) => {
     loginMutation.mutate(data);
@@ -77,8 +73,8 @@ export default function AuthPage() {
     registerMutation.mutate(data);
   };
 
-  // Show loading state if user is authenticated and redirecting
-  if (user && isRedirecting) {
+  // Don't render forms if user is logged in
+  if (user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -92,11 +88,6 @@ export default function AuthPage() {
         </div>
       </div>
     );
-  }
-
-  // Don't show auth forms if user is already logged in
-  if (user) {
-    return null;
   }
 
   return (
@@ -163,7 +154,7 @@ export default function AuthPage() {
 
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full"
                         disabled={loginMutation.isPending}
                       >
                         {loginMutation.isPending ? "Signing in..." : "Sign In"}
@@ -179,7 +170,7 @@ export default function AuthPage() {
                 <CardHeader>
                   <CardTitle>Create Account</CardTitle>
                   <CardDescription>
-                    Register to start using AcademicCRM
+                    Join our academic management platform
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -236,7 +227,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Email</FormLabel>
                             <FormControl>
-                              <Input type="email" placeholder="john@university.edu" {...field} />
+                              <Input type="email" placeholder="john@example.com" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -250,7 +241,7 @@ export default function AuthPage() {
                           <FormItem>
                             <FormLabel>Password</FormLabel>
                             <FormControl>
-                              <Input type="password" placeholder="Choose a strong password" {...field} />
+                              <Input type="password" placeholder="••••••••" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -282,7 +273,7 @@ export default function AuthPage() {
 
                       <Button 
                         type="submit" 
-                        className="w-full" 
+                        className="w-full"
                         disabled={registerMutation.isPending}
                       >
                         {registerMutation.isPending ? "Creating account..." : "Create Account"}
@@ -296,50 +287,43 @@ export default function AuthPage() {
         </div>
       </div>
 
-      {/* Right side - Hero */}
-      <div className="hidden lg:flex lg:flex-1 lg:flex-col lg:justify-center lg:px-20 xl:px-24 bg-primary">
-        <div className="max-w-md">
-          <h1 className="text-3xl font-bold text-primary-foreground">
-            Transform Your Academic Experience
-          </h1>
-          <p className="mt-4 text-lg text-primary-foreground/90">
-            Streamline course management, enhance learning outcomes, and leverage AI-powered insights.
-          </p>
+      {/* Right side - Features showcase */}
+      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800">
+        <div className="flex h-full items-center justify-center p-12">
+          <div className="max-w-md text-center text-white">
+            <h1 className="text-4xl font-bold mb-8">
+              Academic Management Made Simple
+            </h1>
+            
+            <div className="space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <BookOpen className="h-8 w-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold">Course Management</h3>
+                  <p className="text-blue-100">Streamlined course creation and enrollment</p>
+                </div>
+              </div>
 
-          <div className="mt-8 space-y-6">
-            <div className="flex items-center space-x-3">
-              <div className="flex-shrink-0">
-                <BookOpen className="h-6 w-6 text-primary-foreground" />
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <Users className="h-8 w-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold">Multi-Role Support</h3>
+                  <p className="text-blue-100">Students, lecturers, and administrators</p>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-medium text-primary-foreground">Course Management</h3>
-                <p className="text-sm text-primary-foreground/70">
-                  Browse, enroll, and manage your academic journey
-                </p>
-              </div>
-            </div>
 
-            <div className="flex items-center space-x-3">
-              <div className="flex-shrink-0">
-                <Users className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-primary-foreground">Collaboration</h3>
-                <p className="text-sm text-primary-foreground/70">
-                  Connect with peers and instructors seamlessly
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <div className="flex-shrink-0">
-                <Brain className="h-6 w-6 text-primary-foreground" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-primary-foreground">AI Assistant</h3>
-                <p className="text-sm text-primary-foreground/70">
-                  Get personalized recommendations and insights
-                </p>
+              <div className="flex items-center space-x-4">
+                <div className="flex-shrink-0">
+                  <Brain className="h-8 w-8" />
+                </div>
+                <div className="text-left">
+                  <h3 className="font-semibold">AI-Powered Features</h3>
+                  <p className="text-blue-100">Smart recommendations and automation</p>
+                </div>
               </div>
             </div>
           </div>

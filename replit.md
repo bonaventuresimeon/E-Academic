@@ -91,6 +91,21 @@ The system uses PostgreSQL with the following core entities:
 - ESBuild for server-side compilation
 - Static file serving for production
 - Database migrations via Drizzle Kit
+- Legacy peer dependency handling for stability
+
+### Multi-Platform Deployment Support
+The application now supports deployment on:
+- **Vercel**: Serverless deployment with automatic scaling
+- **Render**: Full-stack hosting with PostgreSQL
+- **Fly.io**: Global edge deployment with persistent volumes
+- **AWS**: Docker-based deployment on ECS/EC2/Elastic Beanstalk
+- **Heroku**: Container-based deployment with add-ons
+- **Local**: Production-ready local deployment
+
+### Deployment Scripts
+- `scripts/install-deps.sh`: Handles dependency conflicts and clean installation
+- `scripts/deploy.sh`: Multi-platform deployment automation
+- Platform-specific configuration files (vercel.json, render.yaml, fly.toml, etc.)
 
 ### Environment Configuration
 Required environment variables:
@@ -102,6 +117,9 @@ Required environment variables:
 
 Changelog:
 - July 01, 2025. Initial setup
+- July 01, 2025. Production deployment configuration added with multi-platform support
+- July 01, 2025. Dependency management optimized with legacy peer dependency handling
+- July 01, 2025. Comprehensive deployment scripts created for Vercel, Render, Fly.io, AWS, and Heroku
 
 ## User Preferences
 

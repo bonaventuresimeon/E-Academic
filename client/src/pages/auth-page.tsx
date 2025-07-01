@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
@@ -35,21 +36,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
-  const [isLogin, setIsLogin] = useState(true);
-
-  // Redirect if already logged in using useEffect
-  useEffect(() => {
-    if (user) {
-      setLocation("/");
-    }
-  }, [user, setLocation]);
-
-  // Don't render the form if user is logged in (but keep hooks order intact)
-  if (user) {
-    return <div>Redirecting...</div>;
-  }
-
-
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -71,6 +58,17 @@ export default function AuthPage() {
     },
   });
 
+  // Handle redirect after authentication - moved to end to maintain hook order
+  useEffect(() => {
+    if (user && !isRedirecting) {
+      setIsRedirecting(true);
+      // Use setTimeout to avoid state update during render
+      setTimeout(() => {
+        setLocation("/");
+      }, 100);
+    }
+  }, [user, setLocation, isRedirecting]);
+
   const onLogin = (data: LoginFormData) => {
     loginMutation.mutate(data);
   };
@@ -78,6 +76,28 @@ export default function AuthPage() {
   const onRegister = (data: RegisterFormData) => {
     registerMutation.mutate(data);
   };
+
+  // Show loading state if user is authenticated and redirecting
+  if (user && isRedirecting) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary">
+            <GraduationCap className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <h2 className="mt-6 text-2xl font-bold">Redirecting...</h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Welcome back! Taking you to your dashboard.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't show auth forms if user is already logged in
+  if (user) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex">

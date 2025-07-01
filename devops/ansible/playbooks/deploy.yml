@@ -1,0 +1,134 @@
+---
+# Academic CRM Platform - Ansible Deployment Playbook
+# Supports multiple environments and deployment strategies
+
+- name: Deploy Academic CRM Platform
+  hosts: localhost
+  gather_facts: no
+  vars:
+    environment: "{{ env | default('staging') }}"
+    namespace: "academic-crm"
+    image_tag: "{{ tag | default('latest') }}"
+    deployment_strategy: "{{ strategy | default('rolling') }}"
+    
+    # Environment-specific configurations
+    environments:
+      development:
+        replicas: 1
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        database_size: "db.t3.micro"
+        
+      staging:
+        replicas: 2
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        database_size: "db.t3.small"
+        
+      production:
+        replicas: 5
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "1000m"
+          limits:
+            memory: "2Gi"
+            cpu: "2000m"
+        database_size: "db.t3.medium"
+
+  tasks:
+    - name: Validate environment
+      assert:
+        that:
+          - environment in environments.keys()
+        fail_msg: "Environment '{{ environment }}' is not supported. Use: {{ environments.keys() | list }}"
+
+    - name: Set environment-specific variables
+      set_fact:
+        env_config: "{{ environments[environment] }}"
+
+    - name: Create namespace if it doesn't exist
+      kubernetes.core.k8s:
+        name: "{{ namespace }}"
+        api_version: v1
+        kind: Namespace
+        state: present
+
+    - name: Apply application deployment
+      kubernetes.core.k8s:
+        state: present
+        definition:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: academic-crm-app
+            namespace: "{{ namespace }}"
+            labels:
+              app.kubernetes.io/name: academic-crm
+              app.kubernetes.io/version: "{{ image_tag }}"
+          spec:
+            replicas: "{{ env_config.replicas }}"
+            strategy:
+              type: RollingUpdate
+              rollingUpdate:
+                maxSurge: 1
+                maxUnavailable: 1
+            selector:
+              matchLabels:
+                app.kubernetes.io/name: academic-crm
+            template:
+              metadata:
+                labels:
+                  app.kubernetes.io/name: academic-crm
+                  app.kubernetes.io/version: "{{ image_tag }}"
+              spec:
+                containers:
+                  - name: academic-crm
+                    image: "academic-crm:{{ image_tag }}"
+                    ports:
+                      - containerPort: 5000
+                        name: http
+                    resources: "{{ env_config.resources }}"
+                    livenessProbe:
+                      httpGet:
+                        path: /health
+                        port: http
+                      initialDelaySeconds: 60
+                      periodSeconds: 30
+                    readinessProbe:
+                      httpGet:
+                        path: /ready
+                        port: http
+                      initialDelaySeconds: 10
+                      periodSeconds: 10
+
+    - name: Wait for deployment to be ready
+      kubernetes.core.k8s_info:
+        api_version: apps/v1
+        kind: Deployment
+        name: academic-crm-app
+        namespace: "{{ namespace }}"
+        wait: true
+        wait_condition:
+          type: Progressing
+          status: "True"
+        wait_timeout: 600
+
+    - name: Display deployment information
+      debug:
+        msg:
+          - "Deployment completed successfully!"
+          - "Environment: {{ environment }}"
+          - "Namespace: {{ namespace }}"
+          - "Image tag: {{ image_tag }}"
+          - "Replicas: {{ env_config.replicas }}"

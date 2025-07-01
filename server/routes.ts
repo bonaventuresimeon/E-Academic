@@ -13,6 +13,56 @@ import { generateCourseRecommendations, generateSyllabus } from "./services/ai";
 import { handleFileUpload, getFileUrl } from "./services/fileUpload";
 
 export function registerRoutes(app: Express): Server {
+  // Health and readiness endpoints for Kubernetes
+  app.get("/health", async (req, res) => {
+    try {
+      // Check database connectivity
+      await storage.getUserStats();
+      res.status(200).json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        version: process.env.npm_package_version || "1.0.0",
+        environment: process.env.NODE_ENV || "development"
+      });
+    } catch (error) {
+      res.status(503).json({
+        status: "unhealthy",
+        timestamp: new Date().toISOString(),
+        error: "Database connection failed"
+      });
+    }
+  });
+
+  app.get("/ready", async (req, res) => {
+    try {
+      // Check if application is ready to serve traffic
+      await storage.getUserStats();
+      res.status(200).json({
+        status: "ready",
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(503).json({
+        status: "not ready",
+        timestamp: new Date().toISOString(),
+        error: "Application not ready"
+      });
+    }
+  });
+
+  app.get("/metrics", (req, res) => {
+    // Basic metrics endpoint for Prometheus
+    res.set('Content-Type', 'text/plain');
+    res.send(`# Academic CRM Metrics
+# TYPE academic_crm_uptime_seconds counter
+academic_crm_uptime_seconds ${process.uptime()}
+# TYPE academic_crm_memory_usage_bytes gauge
+academic_crm_memory_usage_bytes ${process.memoryUsage().heapUsed}
+# TYPE academic_crm_version_info gauge
+academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}"} 1
+`);
+  });
+
   // Setup authentication routes
   setupAuth(app);
 

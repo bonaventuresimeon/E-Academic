@@ -1,0 +1,68 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: academic-crm-production
+  namespace: academic-crm
+
+namePrefix: prod-
+
+commonLabels:
+  environment: production
+  app.kubernetes.io/instance: production
+
+bases:
+  - ../../base
+
+resources:
+  - ../../security/rbac.yaml
+  - ../../monitoring/prometheus.yaml
+  - ../../monitoring/grafana.yaml
+
+images:
+  - name: academic-crm
+    newTag: v1.0.0
+
+replicas:
+  - name: academic-crm-app
+    count: 5
+  - name: postgres
+    count: 1
+
+configMapGenerator:
+  - name: production-config
+    behavior: merge
+    literals:
+      - NODE_ENV=production
+      - LOG_LEVEL=warn
+      - RATE_LIMIT_MAX_REQUESTS=200
+      - MAX_ENROLLMENT_PER_COURSE=100
+      - ENABLE_METRICS=true
+      - SECURE_COOKIES=true
+      - TRUST_PROXY=true
+
+secretGenerator:
+  - name: production-secrets
+    behavior: replace
+    envs:
+      - production.env
+
+patchesStrategicMerge:
+  - patches/deployment-production.yaml
+  - patches/ingress-production.yaml
+
+patchesJson6902:
+  - target:
+      version: v1
+      kind: Service
+      name: academic-crm-service
+    patch: |-
+      - op: replace
+        path: /spec/type
+        value: LoadBalancer
+      - op: add
+        path: /metadata/annotations/service.beta.kubernetes.io~1aws-load-balancer-type
+        value: nlb
+
+generatorOptions:
+  disableNameSuffixHash: true

@@ -1,0 +1,63 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+metadata:
+  name: academic-crm-base
+  annotations:
+    config.kubernetes.io/local-config: "true"
+
+namespace: academic-crm
+
+commonLabels:
+  app.kubernetes.io/name: academic-crm
+  app.kubernetes.io/version: "1.0.0"
+  app.kubernetes.io/managed-by: kustomize
+
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - secret.yaml
+  - postgres.yaml
+  - app-deployment.yaml
+  - service.yaml
+  - ingress.yaml
+  - hpa.yaml
+
+images:
+  - name: academic-crm
+    newTag: latest
+
+configMapGenerator:
+  - name: academic-crm-env-config
+    literals:
+      - NODE_ENV=production
+      - LOG_LEVEL=info
+      - METRICS_ENABLED=true
+
+secretGenerator:
+  - name: academic-crm-app-secrets
+    type: Opaque
+    literals:
+      - SESSION_SECRET=placeholder-change-in-overlay
+      - DATABASE_URL=placeholder-change-in-overlay
+      - OPENAI_API_KEY=placeholder-change-in-overlay
+
+patches:
+  - target:
+      kind: Deployment
+      name: academic-crm-app
+    patch: |-
+      - op: add
+        path: /spec/template/spec/serviceAccountName
+        value: academic-crm-sa
+      - op: add
+        path: /spec/template/metadata/annotations/prometheus.io~1scrape
+        value: "true"
+      - op: add
+        path: /spec/template/metadata/annotations/prometheus.io~1port
+        value: "5000"
+
+generatorOptions:
+  disableNameSuffixHash: false
+  labels:
+    app.kubernetes.io/component: configuration

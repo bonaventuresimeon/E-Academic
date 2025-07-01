@@ -5,14 +5,14 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
-import NotFound from "@/pages/not-found";
-import AuthPage from "@/pages/auth-page";
 import StudentDashboard from "@/pages/student-dashboard";
 import LecturerDashboard from "@/pages/lecturer-dashboard";
 import AdminDashboard from "@/pages/admin-dashboard";
 import Courses from "@/pages/courses";
 import Assignments from "@/pages/assignments";
 import AIAssistant from "@/pages/ai-assistant";
+import Notifications from "@/pages/notifications";
+import NotFound from "@/pages/not-found";
 
 function Router() {
   return (
@@ -24,6 +24,7 @@ function Router() {
       <ProtectedRoute path="/courses" component={Courses} />
       <ProtectedRoute path="/assignments" component={Assignments} />
       <ProtectedRoute path="/ai-assistant" component={AIAssistant} />
+      <Route path="/notifications" component={Notifications} />
       <Route path="/auth" component={AuthPage} />
       <Route component={NotFound} />
     </Switch>

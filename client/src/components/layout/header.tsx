@@ -30,6 +30,7 @@ export default function Header() {
     { name: "Courses", href: "/courses", current: location === "/courses" },
     { name: "Assignments", href: "/assignments", current: location === "/assignments" },
     { name: "AI Assistant", href: "/ai-assistant", current: location === "/ai-assistant" },
+    { name: "Notifications", href: "/notifications", current: location === "/notifications" },
   ];
 
   // Filter navigation based on role
@@ -39,12 +40,14 @@ export default function Header() {
         { name: "Dashboard", href: "/admin-dashboard", current: location === "/admin-dashboard" || location === "/" },
         { name: "Courses", href: "/courses", current: location === "/courses" },
         { name: "AI Assistant", href: "/ai-assistant", current: location === "/ai-assistant" },
+        { name: "Notifications", href: "/notifications", current: location === "/notifications" },
       ];
     } else if (user?.role === "lecturer") {
       return [
         { name: "Dashboard", href: "/lecturer-dashboard", current: location === "/lecturer-dashboard" || location === "/" },
         { name: "Courses", href: "/courses", current: location === "/courses" },
         { name: "AI Assistant", href: "/ai-assistant", current: location === "/ai-assistant" },
+        { name: "Notifications", href: "/notifications", current: location === "/notifications" },
       ];
     }
     return navigation;
@@ -82,13 +85,13 @@ export default function Header() {
               ))}
             </nav>
           </div>
-          
+
           <div className="flex items-center space-x-4">
             <Button variant="ghost" size="icon" className="relative">
               <Bell className="h-5 w-5" />
               <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500 transform translate-x-1/2 -translate-y-1/2"></span>
             </Button>
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-3 hover:bg-gray-50">

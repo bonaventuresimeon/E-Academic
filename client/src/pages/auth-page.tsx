@@ -44,9 +44,9 @@ export default function AuthPage() {
     }
   }, [user, setLocation]);
 
-  // Don't render the form if user is logged in
+  // Don't render the form if user is logged in (but keep hooks order intact)
   if (user) {
-    return null;
+    return <div>Redirecting...</div>;
   }
 
 

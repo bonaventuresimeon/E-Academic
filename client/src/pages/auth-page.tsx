@@ -35,12 +35,15 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
   const [, setLocation] = useLocation();
+  const [isLogin, setIsLogin] = useState(true);
 
   // Redirect if already logged in
   if (user) {
     setLocation("/");
     return null;
   }
+
+
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -117,7 +120,7 @@ export default function AuthPage() {
                           </FormItem>
                         )}
                       />
-                      
+
                       <FormField
                         control={loginForm.control}
                         name="password"
@@ -170,7 +173,7 @@ export default function AuthPage() {
                             </FormItem>
                           )}
                         />
-                        
+
                         <FormField
                           control={registerForm.control}
                           name="lastName"
@@ -276,7 +279,7 @@ export default function AuthPage() {
           <p className="mt-4 text-lg text-primary-foreground/90">
             Streamline course management, enhance learning outcomes, and leverage AI-powered insights.
           </p>
-          
+
           <div className="mt-8 space-y-6">
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
@@ -289,7 +292,7 @@ export default function AuthPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
                 <Users className="h-6 w-6 text-primary-foreground" />
@@ -301,7 +304,7 @@ export default function AuthPage() {
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-3">
               <div className="flex-shrink-0">
                 <Brain className="h-6 w-6 text-primary-foreground" />

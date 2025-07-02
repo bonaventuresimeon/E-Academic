@@ -347,15 +347,18 @@ export default function AdvancedDashboard() {
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
               <div className="flex items-center space-x-3">
-                <Logo size="sm" className="flex-shrink-0" />
+                <LogoIcon size="xs" className="flex-shrink-0" />
                 <div>
+                  <h1 className="text-base font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    Academic-CRM
+                  </h1>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Advanced Dashboard</p>
                 </div>
               </div>
             )}
             {sidebarCollapsed && (
               <div className="flex justify-center">
-                <LogoIcon size="sm" className="flex-shrink-0" />
+                <LogoIcon size="xs" className="flex-shrink-0" />
               </div>
             )}
             <Button
@@ -484,7 +487,7 @@ export default function AdvancedDashboard() {
                 <Menu className="w-5 h-5" />
               </Button>
               <div className="lg:hidden">
-                <LogoIcon size="sm" />
+                <LogoIcon size="xs" />
               </div>
             </div>
             

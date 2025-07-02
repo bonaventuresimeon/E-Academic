@@ -142,3 +142,12 @@ model GeneratedSyllabus {
 
   @@map("generated_syllabi")
 }
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String
+  expiresAt DateTime @map("expires_at")
+
+  @@map("session")
+}

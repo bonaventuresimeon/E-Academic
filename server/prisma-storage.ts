@@ -75,11 +75,21 @@ export class PrismaStorage implements IStorage {
   sessionStore: session.Store;
 
   constructor() {
-    this.sessionStore = new PrismaSessionStore(prisma, {
-      checkPeriod: 2 * 60 * 1000, // 2 minutes
-      dbRecordIdIsSessionId: true,
-      dbRecordIdFunction: undefined,
-    });
+    // Initialize the session store with proper error handling
+    try {
+      this.sessionStore = new PrismaSessionStore(prisma, {
+        checkPeriod: 2 * 60 * 1000, // 2 minutes
+        dbRecordIdIsSessionId: true,
+        dbRecordIdFunction: undefined,
+      });
+    } catch (error) {
+      console.error('Failed to initialize PrismaSessionStore:', error);
+      // Fallback to memory store for development
+      const MemoryStore = require('memorystore')(session);
+      this.sessionStore = new MemoryStore({
+        checkPeriod: 86400000, // prune expired entries every 24h
+      });
+    }
   }
 
   // User operations

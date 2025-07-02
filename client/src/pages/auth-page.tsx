@@ -167,7 +167,7 @@ export default function AuthPage() {
               <GraduationCap className="h-8 w-8 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-glow">
-              AcademicCRM
+              E-Academic
             </h2>
             <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
               SECURE ACADEMIC MANAGEMENT INTERFACE

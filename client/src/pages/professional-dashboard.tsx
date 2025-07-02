@@ -4,6 +4,7 @@ import { AdvancedUserProfile } from "@/components/advanced-user-profile";
 import { AdvancedMiniMenubar } from "@/components/advanced-mini-menubar";
 import { AdvancedUserProfilePanel } from "@/components/advanced-user-profile-panel";
 import { AdvancedNotifications } from "@/components/advanced-notifications";
+import { AdvancedSidebar } from "@/components/advanced-sidebar";
 import {
   Search,
   Bell,
@@ -143,7 +144,29 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
   }, []);
 
   return (
-    <div className="professional-dashboard">
+    <div className="dashboard-layout">
+      {/* Desktop Sidebar - Hidden on Mobile */}
+      <div className="desktop-only">
+        <AdvancedSidebar
+          user={user}
+          onProfileClick={() => setIsAdvancedProfileOpen(true)}
+          onNotificationClick={() => setIsNotificationsOpen(true)}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          onLogout={() => window.location.href = '/api/logout'}
+        />
+      </div>
+
+      {/* Mobile Menubar - Hidden on Desktop */}
+      <div className="mobile-only">
+        <AdvancedMiniMenubar
+          user={user}
+          onProfileClick={() => setIsAdvancedProfileOpen(true)}
+          onNotificationClick={() => setIsNotificationsOpen(true)}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+        />
+      </div>
+
+      <div className="dashboard-content">
       {/* Professional Header */}
       <header className="professional-header">
         <nav className="professional-nav">
@@ -605,6 +628,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           </div>
         </div>
       </footer>
+      </div>
 
       {/* Advanced Components */}
       <AdvancedUserProfilePanel
@@ -625,6 +649,70 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
         onClose={() => setIsProfileOpen(false)}
         user={user}
       />
+
+      <style jsx>{`
+        .dashboard-layout {
+          display: flex;
+          min-height: 100vh;
+          background: #f8fafc;
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        .desktop-only {
+          display: none;
+        }
+
+        .mobile-only {
+          display: block;
+        }
+
+        .dashboard-content {
+          flex: 1;
+          overflow-x: hidden;
+          margin-top: 4rem; /* Space for mobile menubar */
+        }
+
+        /* Desktop Layout */
+        @media (min-width: 1024px) {
+          .desktop-only {
+            display: block;
+          }
+
+          .mobile-only {
+            display: none;
+          }
+
+          .dashboard-content {
+            margin-left: 20rem; /* Space for sidebar */
+            margin-top: 0;
+          }
+        }
+
+        /* Remove old professional dashboard styles on desktop */
+        @media (min-width: 1024px) {
+          .professional-header {
+            display: none;
+          }
+        }
+
+        /* Adjust content spacing */
+        .dashboard-content .main-content {
+          margin-top: 0;
+        }
+
+        @media (max-width: 1023px) {
+          .dashboard-content .main-content {
+            margin-top: 2rem;
+          }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+          .dashboard-content {
+            margin-top: 4.5rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

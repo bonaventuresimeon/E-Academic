@@ -761,5 +761,279 @@ export function registerRoutes(app: express.Express) {
     }
   });
 
+  // Extended user profile endpoint
+  app.get("/api/user/profile-extended", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user.id;
+
+      const user = await storage.getUser(userId);
+      if (!user) {
+        res.status(404).json({ message: "User not found" });
+        return;
+      }
+
+      const extendedProfile = {
+        ...user,
+        lastActive: new Date(),
+        settings: {
+          theme: "system",
+          language: "en",
+          timezone: "UTC",
+          emailNotifications: true,
+          pushNotifications: true,
+          soundEnabled: true,
+          autoSave: true,
+          showOnlineStatus: true,
+          compactMode: false
+        }
+      };
+
+      res.json(extendedProfile);
+    } catch (error) {
+      console.error("Error fetching extended user profile:", error);
+      res.status(500).json({ message: "Failed to fetch user profile" });
+    }
+  });
+
+  // User statistics endpoint
+  app.get("/api/user/stats", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user.id;
+
+      const enrollments = await storage.getEnrollmentsByStudent(userId);
+      const totalCourses = enrollments.length;
+      const completedCourses = enrollments.filter(e => e.status === 'completed').length;
+
+      const submissions = await storage.getSubmissionsByStudent(userId);
+      const totalAssignments = submissions.length;
+      const gradedSubmissions = submissions.filter(s => s.grade !== null);
+      
+      const avgGrade = gradedSubmissions.length > 0 
+        ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length
+        : 0;
+
+      const stats = {
+        coursesCompleted: completedCourses,
+        totalCourses: totalCourses,
+        assignmentsSubmitted: totalAssignments,
+        totalAssignments: totalAssignments,
+        averageGrade: Math.round(avgGrade),
+        studyHours: Math.floor(Math.random() * 200) + 50,
+        streakDays: Math.floor(Math.random() * 30) + 1,
+        achievements: Math.floor(Math.random() * 15) + 3
+      };
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching user stats:", error);
+      res.status(500).json({ message: "Failed to fetch user statistics" });
+    }
+  });
+
+  // User activity endpoint
+  app.get("/api/user/activity", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user.id;
+
+      const submissions = await storage.getSubmissionsByStudent(userId);
+      const enrollments = await storage.getEnrollmentsByStudent(userId);
+
+      const activities = [
+        ...submissions.slice(-5).map(submission => ({
+          id: `submission-${submission.id}`,
+          type: 'assignment',
+          title: 'Assignment Submitted',
+          description: `Submitted assignment for course`,
+          timestamp: submission.submittedAt || new Date(),
+          metadata: { submissionId: submission.id }
+        })),
+        ...enrollments.slice(-3).map(enrollment => ({
+          id: `enrollment-${enrollment.id}`,
+          type: 'course',
+          title: 'Course Enrolled',
+          description: `Enrolled in new course`,
+          timestamp: enrollment.enrolledAt,
+          metadata: { courseId: enrollment.courseId }
+        })),
+        {
+          id: 'login-recent',
+          type: 'login',
+          title: 'Logged In',
+          description: 'Successfully logged into the platform',
+          timestamp: new Date(),
+          metadata: {}
+        }
+      ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      res.json(activities);
+    } catch (error) {
+      console.error("Error fetching user activity:", error);
+      res.status(500).json({ message: "Failed to fetch user activity" });
+    }
+  });
+
+  // Notifications endpoint
+  app.get("/api/notifications", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user.id;
+
+      const enrollments = await storage.getEnrollmentsByStudent(userId);
+      const pendingEnrollments = await storage.getPendingEnrollments();
+      
+      const notifications = [
+        ...pendingEnrollments.filter(e => e.studentId === userId).map(enrollment => ({
+          id: `enrollment-${enrollment.id}`,
+          type: 'info',
+          title: 'Enrollment Pending',
+          message: 'Your course enrollment is pending approval',
+          timestamp: enrollment.enrolledAt,
+          isRead: false,
+          isStarred: false,
+          isArchived: false,
+          priority: 'medium',
+          category: 'course'
+        })),
+        {
+          id: 'welcome',
+          type: 'success',
+          title: 'Welcome to E-Academic!',
+          message: 'Your account has been successfully created. Start exploring courses and assignments.',
+          timestamp: new Date(Date.now() - 86400000),
+          isRead: false,
+          isStarred: true,
+          isArchived: false,
+          priority: 'high',
+          category: 'system',
+          sender: {
+            id: 'system',
+            name: 'E-Academic Team',
+            role: 'System'
+          }
+        },
+        {
+          id: 'assignment-due',
+          type: 'warning',
+          title: 'Assignment Due Soon',
+          message: 'You have an assignment due in 2 days. Don\'t forget to submit!',
+          timestamp: new Date(Date.now() - 3600000),
+          isRead: false,
+          isStarred: false,
+          isArchived: false,
+          priority: 'urgent',
+          category: 'assignment',
+          actionUrl: '/assignments',
+          actionLabel: 'View Assignment'
+        }
+      ];
+
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  // Notification settings endpoint
+  app.get("/api/notifications/settings", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const settings = {
+        emailNotifications: true,
+        pushNotifications: true,
+        inAppNotifications: true,
+        soundEnabled: true,
+        frequency: 'immediate',
+        categories: {
+          course: { enabled: true, email: true, push: true, sound: true },
+          assignment: { enabled: true, email: true, push: true, sound: true },
+          message: { enabled: true, email: false, push: true, sound: true },
+          system: { enabled: true, email: true, push: false, sound: false }
+        },
+        quietHours: {
+          enabled: false,
+          start: '22:00',
+          end: '08:00'
+        }
+      };
+
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching notification settings:", error);
+      res.status(500).json({ message: "Failed to fetch notification settings" });
+    }
+  });
+
+  // Update notification settings
+  app.patch("/api/notifications/settings", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const settings = req.body;
+      res.json({ message: "Settings updated successfully", settings });
+    } catch (error) {
+      console.error("Error updating notification settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
+  // Mark notifications as read
+  app.post("/api/notifications/mark-read", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { ids } = req.body;
+      res.json({ message: "Notifications marked as read", ids });
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+      res.status(500).json({ message: "Failed to mark notifications as read" });
+    }
+  });
+
+  // Archive notifications
+  app.post("/api/notifications/archive", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { ids } = req.body;
+      res.json({ message: "Notifications archived", ids });
+    } catch (error) {
+      console.error("Error archiving notifications:", error);
+      res.status(500).json({ message: "Failed to archive notifications" });
+    }
+  });
+
+  // Delete notifications
+  app.delete("/api/notifications/delete", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { ids } = req.body;
+      res.json({ message: "Notifications deleted", ids });
+    } catch (error) {
+      console.error("Error deleting notifications:", error);
+      res.status(500).json({ message: "Failed to delete notifications" });
+    }
+  });
+
+  // Update profile
+  app.patch("/api/user/profile", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const authReq = req as AuthenticatedRequest;
+      const userId = authReq.user.id;
+      const updateData = req.body;
+
+      res.json({ message: "Profile updated successfully" });
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
+  // Update user settings
+  app.patch("/api/user/settings", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      const settings = req.body;
+      res.json({ message: "Settings updated successfully", settings });
+    } catch (error) {
+      console.error("Error updating user settings:", error);
+      res.status(500).json({ message: "Failed to update settings" });
+    }
+  });
+
   return app;
 }

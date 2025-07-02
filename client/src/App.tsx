@@ -12,6 +12,7 @@ import Courses from "@/pages/courses";
 import Assignments from "@/pages/assignments";
 import AIAssistant from "@/pages/ai-assistant";
 import Notifications from "@/pages/notifications";
+import AuthPage from "@/pages/auth-page";
 import NotFound from "@/pages/not-found";
 
 function Router() {

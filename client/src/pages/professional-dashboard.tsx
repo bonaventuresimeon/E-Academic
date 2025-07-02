@@ -18,7 +18,16 @@ import {
   MessageSquare,
   BarChart3,
   Menu,
-  X
+  X,
+  Facebook,
+  Twitter,
+  Instagram,
+  Linkedin,
+  Mail,
+  Phone,
+  MapPin,
+  ExternalLink,
+  Send
 } from "lucide-react";
 import '../styles/dashboard.css';
 
@@ -429,6 +438,167 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           </div>
         </div>
       </main>
+
+      {/* Advanced Footer */}
+      <footer className="advanced-footer">
+        <div className="footer-container">
+          {/* Footer Stats */}
+          <div className="footer-stats">
+            <div className="footer-stat">
+              <div className="footer-stat-value">{courses.length}+</div>
+              <div className="footer-stat-label">Active Courses</div>
+            </div>
+            <div className="footer-stat">
+              <div className="footer-stat-value">{stats?.totalStudents || 250}+</div>
+              <div className="footer-stat-label">Students Enrolled</div>
+            </div>
+            <div className="footer-stat">
+              <div className="footer-stat-value">95%</div>
+              <div className="footer-stat-label">Success Rate</div>
+            </div>
+          </div>
+
+          {/* Footer Content */}
+          <div className="footer-content">
+            {/* Brand Section */}
+            <div className="footer-brand">
+              <div className="footer-logo">
+                <div className="footer-logo-icon">
+                  <GraduationCap className="h-5 w-5" />
+                </div>
+                <span className="footer-logo-text">E-Academic</span>
+              </div>
+              <p className="footer-description">
+                Empowering education through innovative technology. Our comprehensive academic management platform transforms the way institutions deliver learning experiences.
+              </p>
+              <div className="footer-social">
+                <a href="#" className="social-link">
+                  <Facebook className="h-4 w-4" />
+                </a>
+                <a href="#" className="social-link">
+                  <Twitter className="h-4 w-4" />
+                </a>
+                <a href="#" className="social-link">
+                  <Instagram className="h-4 w-4" />
+                </a>
+                <a href="#" className="social-link">
+                  <Linkedin className="h-4 w-4" />
+                </a>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div className="footer-section">
+              <h3 className="footer-title">Platform</h3>
+              <div className="footer-links">
+                <a href="#" className="footer-link">
+                  <BookOpen className="footer-link-icon" />
+                  Courses
+                </a>
+                <a href="#" className="footer-link">
+                  <FileText className="footer-link-icon" />
+                  Assignments
+                </a>
+                <a href="#" className="footer-link">
+                  <BarChart3 className="footer-link-icon" />
+                  Analytics
+                </a>
+                <a href="#" className="footer-link">
+                  <Calendar className="footer-link-icon" />
+                  Schedule
+                </a>
+                <a href="#" className="footer-link">
+                  <MessageSquare className="footer-link-icon" />
+                  Messages
+                </a>
+              </div>
+            </div>
+
+            {/* Resources */}
+            <div className="footer-section">
+              <h3 className="footer-title">Resources</h3>
+              <div className="footer-links">
+                <a href="#" className="footer-link">
+                  <ExternalLink className="footer-link-icon" />
+                  Help Center
+                </a>
+                <a href="#" className="footer-link">
+                  <ExternalLink className="footer-link-icon" />
+                  Documentation
+                </a>
+                <a href="#" className="footer-link">
+                  <ExternalLink className="footer-link-icon" />
+                  API Reference
+                </a>
+                <a href="#" className="footer-link">
+                  <ExternalLink className="footer-link-icon" />
+                  Status Page
+                </a>
+                <a href="#" className="footer-link">
+                  <ExternalLink className="footer-link-icon" />
+                  Tutorials
+                </a>
+              </div>
+            </div>
+
+            {/* Company */}
+            <div className="footer-section">
+              <h3 className="footer-title">Company</h3>
+              <div className="footer-links">
+                <a href="#" className="footer-link">About Us</a>
+                <a href="#" className="footer-link">Careers</a>
+                <a href="#" className="footer-link">Press</a>
+                <a href="#" className="footer-link">Partners</a>
+                <a href="#" className="footer-link">Blog</a>
+              </div>
+            </div>
+
+            {/* Contact & Newsletter */}
+            <div className="footer-section">
+              <h3 className="footer-title">Contact</h3>
+              <div className="footer-contact-item">
+                <Mail className="footer-contact-icon" />
+                <span>support@e-academic.com</span>
+              </div>
+              <div className="footer-contact-item">
+                <Phone className="footer-contact-icon" />
+                <span>+1 (555) 123-4567</span>
+              </div>
+              <div className="footer-contact-item">
+                <MapPin className="footer-contact-icon" />
+                <span>San Francisco, CA</span>
+              </div>
+              
+              <div className="footer-newsletter">
+                <h4 className="footer-title">Newsletter</h4>
+                <div className="newsletter-form">
+                  <input 
+                    type="email" 
+                    placeholder="Enter your email"
+                    className="newsletter-input"
+                  />
+                  <button className="newsletter-btn">
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div className="footer-bottom">
+            <div className="footer-copyright">
+              © 2025 E-Academic. All rights reserved.
+            </div>
+            <div className="footer-bottom-links">
+              <a href="#" className="footer-bottom-link">Privacy Policy</a>
+              <a href="#" className="footer-bottom-link">Terms of Service</a>
+              <a href="#" className="footer-bottom-link">Cookie Policy</a>
+              <a href="#" className="footer-bottom-link">Accessibility</a>
+            </div>
+          </div>
+        </div>
+      </footer>
 
       {/* User Profile Modal */}
       <AdvancedUserProfile

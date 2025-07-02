@@ -386,7 +386,7 @@ const UniversityDashboard = () => {
       {/* Mobile Overlay */}
       {!sidebarCollapsed && (
         <div 
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-gradient-to-br from-black/60 via-black/50 to-black/40 z-30 lg:hidden"
           onClick={() => setSidebarCollapsed(true)}
         />
       )}
@@ -424,7 +424,7 @@ const UniversityDashboard = () => {
                   "text-lg font-bold",
                   darkMode ? "text-white" : "text-gray-900"
                 )}>
-                  Academic University
+                  Academic-CRM
                 </h1>
               </div>
             </div>
@@ -584,21 +584,26 @@ const UniversityDashboard = () => {
             ? "-translate-x-full lg:translate-x-0 lg:w-16" 
             : "translate-x-0 w-64",
           darkMode 
-            ? "bg-slate-900 border-slate-800" 
-            : "bg-white border-gray-200"
+            ? "bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800 border-slate-800" 
+            : "bg-gradient-to-b from-white via-gray-50 to-gray-100 border-gray-200"
         )}>
           <div className="flex flex-col h-full">
             {/* Quick Stats */}
             {!sidebarCollapsed && (
-              <div className="p-4 border-b border-slate-800">
+              <div className={cn(
+                "p-4 border-b",
+                darkMode ? "border-slate-800" : "border-gray-200"
+              )}>
                 <div className={cn(
                   "rounded-lg p-3",
-                  darkMode ? "bg-slate-800" : "bg-gray-50"
+                  darkMode 
+                    ? "bg-gradient-to-r from-slate-800 to-slate-700 border border-slate-600" 
+                    : "bg-gradient-to-r from-blue-50 to-purple-50 border border-blue-200"
                 )}>
                   <div className="flex items-center justify-between mb-2">
                     <span className={cn(
                       "text-sm font-medium",
-                      darkMode ? "text-slate-300" : "text-gray-700"
+                      darkMode ? "text-slate-200" : "text-gray-800"
                     )}>
                       Academic Year 2024-25
                     </span>
@@ -606,7 +611,10 @@ const UniversityDashboard = () => {
                       Active
                     </Badge>
                   </div>
-                  <div className="text-xs text-slate-500">
+                  <div className={cn(
+                    "text-xs",
+                    darkMode ? "text-slate-400" : "text-gray-600"
+                  )}>
                     Semester 2 • Week 8
                   </div>
                 </div>
@@ -673,7 +681,9 @@ const UniversityDashboard = () => {
             {/* Sidebar Footer */}
             <div className={cn(
               "p-3 border-t",
-              darkMode ? "border-slate-800" : "border-gray-200"
+              darkMode 
+                ? "border-slate-700 bg-gradient-to-r from-slate-800 to-slate-700" 
+                : "border-gray-200 bg-gradient-to-r from-gray-50 to-gray-100"
             )}>
               {/* Dark Mode Toggle */}
               {!sidebarCollapsed && (
@@ -1121,7 +1131,7 @@ const UniversityDashboard = () => {
               <span className={cn(
                 darkMode ? "text-slate-400" : "text-gray-600"
               )}>
-                © 2024 University Portal
+                © 2025 Academic-CRM
               </span>
               <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <span className={cn(

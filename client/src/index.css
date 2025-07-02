@@ -52,6 +52,22 @@
   --timing-slow: 0.6s;
   --easing: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --easing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Advanced Gradients */
+  --gradient-primary: linear-gradient(135deg, #00d4ff 0%, #0099cc 50%, #7c3aed 100%);
+  --gradient-secondary: linear-gradient(45deg, #ff6b35 0%, #ffaa00 50%, #ff0055 100%);
+  --gradient-success: linear-gradient(135deg, #00ff88 0%, #00cc66 50%, #009944 100%);
+  --gradient-danger: linear-gradient(135deg, #ff0055 0%, #cc0044 50%, #990033 100%);
+  --gradient-hud-panel: linear-gradient(135deg, rgba(20, 20, 32, 0.95) 0%, rgba(26, 26, 46, 0.9) 100%);
+  --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+  --gradient-button-hover: linear-gradient(135deg, rgba(0, 212, 255, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+  --gradient-scan-line: linear-gradient(90deg, transparent 0%, rgba(0, 212, 255, 0.6) 50%, transparent 100%);
+  
+  /* Animated Background Patterns */
+  --pattern-circuit: radial-gradient(circle at 25px 25px, rgba(0, 212, 255, 0.2) 2px, transparent 2px),
+                     radial-gradient(circle at 75px 75px, rgba(124, 58, 237, 0.2) 2px, transparent 2px);
+  --pattern-grid: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0, 212, 255, 0.1) 40px, rgba(0, 212, 255, 0.1) 42px),
+                  repeating-linear-gradient(90deg, transparent, transparent 40px, rgba(0, 212, 255, 0.1) 40px, rgba(0, 212, 255, 0.1) 42px);
 }
 
 .dark {
@@ -114,7 +130,7 @@ h6 { font-size: 1.25rem; }
   text-transform: uppercase;
   letter-spacing: 0.1em;
   border: var(--border-width) solid var(--border-primary);
-  background: var(--bg-glass);
+  background: var(--gradient-hud-panel);
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--timing-normal) var(--easing);
@@ -652,6 +668,107 @@ h6 { font-size: 1.25rem; }
 @keyframes dataStream {
   0% { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
+}
+
+@keyframes scanLine {
+  0% { transform: translateX(-100%); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes hologramFlicker {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  2% { opacity: 0.9; filter: brightness(1.1); }
+  4% { opacity: 1; filter: brightness(0.95); }
+  6% { opacity: 0.95; filter: brightness(1.05); }
+}
+
+@keyframes energyPulse {
+  0% { 
+    box-shadow: 0 0 5px var(--primary-glow); 
+    border-color: var(--primary);
+  }
+  50% { 
+    box-shadow: 0 0 30px var(--primary-glow), 0 0 60px var(--primary-glow);
+    border-color: var(--primary-light);
+  }
+  100% { 
+    box-shadow: 0 0 5px var(--primary-glow);
+    border-color: var(--primary);
+  }
+}
+
+@keyframes matrixRain {
+  0% { transform: translateY(-100vh); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { transform: translateY(100vh); opacity: 0; }
+}
+
+@keyframes morphGradient {
+  0% { background: var(--gradient-primary); }
+  25% { background: var(--gradient-secondary); }
+  50% { background: var(--gradient-success); }
+  75% { background: var(--gradient-danger); }
+  100% { background: var(--gradient-primary); }
+}
+
+@keyframes circuitTrace {
+  0% { stroke-dashoffset: 100; opacity: 0.5; }
+  50% { stroke-dashoffset: 0; opacity: 1; }
+  100% { stroke-dashoffset: -100; opacity: 0.5; }
+}
+
+/* Advanced Animation Classes */
+.animate-scan {
+  position: relative;
+  overflow: hidden;
+}
+
+.animate-scan::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-scan-line);
+  animation: scanLine 3s ease-in-out infinite;
+}
+
+.animate-gradient-morph {
+  background: var(--gradient-primary);
+  background-size: 400% 400%;
+  animation: morphGradient 8s ease-in-out infinite;
+}
+
+.animate-hologram {
+  animation: hologramFlicker 4s ease-in-out infinite;
+}
+
+.animate-energy-pulse {
+  animation: energyPulse 2s ease-in-out infinite;
+}
+
+.animate-matrix-rain {
+  animation: matrixRain 10s linear infinite;
+}
+
+.animate-circuit {
+  animation: circuitTrace 3s ease-in-out infinite;
+}
+
+.animate-gradient-shift {
+  background: var(--gradient-primary);
+  background-size: 200% 200%;
+  animation: gradientShift 4s ease infinite;
 }
 
 /* Utility Classes */

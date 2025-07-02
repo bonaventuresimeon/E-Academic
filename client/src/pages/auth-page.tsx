@@ -180,7 +180,7 @@ export default function AuthPage() {
 
                     <button 
                       type="submit" 
-                      className="btn-hud btn-hud-primary w-full"
+                      className="btn-hud btn-hud-primary w-full animate-scan animate-energy-pulse"
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending ? "AUTHENTICATING..." : "INITIATE ACCESS"}
@@ -299,7 +299,7 @@ export default function AuthPage() {
 
                     <button 
                       type="submit" 
-                      className="btn-hud btn-hud-success w-full"
+                      className="btn-hud btn-hud-success w-full animate-gradient-morph animate-circuit"
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending ? "REGISTERING USER..." : "REGISTER NEW USER"}
@@ -330,7 +330,7 @@ export default function AuthPage() {
             </h1>
             
             <div className="space-y-8">
-              <div className="card-hud card-hud-interactive animate-slide-left">
+              <div className="card-hud card-hud-interactive animate-slide-left animate-gradient-shift">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0" style={{
                     background: 'var(--primary)',
@@ -348,7 +348,7 @@ export default function AuthPage() {
                 </div>
               </div>
 
-              <div className="card-hud card-hud-interactive animate-slide-right">
+              <div className="card-hud card-hud-interactive animate-slide-right animate-hologram">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0" style={{
                     background: 'var(--success)',
@@ -366,7 +366,7 @@ export default function AuthPage() {
                 </div>
               </div>
 
-              <div className="card-hud card-hud-interactive animate-fade-in">
+              <div className="card-hud card-hud-interactive animate-fade-in animate-matrix-rain animate-energy-pulse">
                 <div className="flex items-center space-x-4">
                   <div className="flex-shrink-0" style={{
                     background: 'var(--accent)',

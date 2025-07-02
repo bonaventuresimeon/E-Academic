@@ -114,7 +114,7 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
     }
   });
 
-  app.get("/api/courses/:id", async (req, res) => {
+  app.get("/api/courses/:id", async (req, res): Promise<void> => {
     try {
       const course = await storage.getCourse(parseInt(req.params.id));
       if (!course) {
@@ -126,7 +126,7 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
     }
   });
 
-  app.post("/api/courses", requireAuth, requireRole(['lecturer', 'admin']), async (req, res) => {
+  app.post("/api/courses", requireAuth, requireRole(['lecturer', 'admin']), async (req, res): Promise<void> => {
     try {
       const courseData = insertCourseSchema.parse(req.body);
       const course = await storage.createCourse(courseData);

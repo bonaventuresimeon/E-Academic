@@ -323,15 +323,17 @@ export default function AdvancedDashboard() {
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100"
     )}>
-      {/* Mobile Navbar */}
-      <MobileNavbar
-        user={user}
-        onLogout={() => window.location.href = '/api/logout'}
-        onProfileClick={() => setShowUserProfile(true)}
-        onNotificationClick={() => setActiveTab('notifications')}
-      />
+      {/* Mobile Navigation - Only on small screens */}
+      <div className="lg:hidden">
+        <MobileNavbar
+          user={user}
+          onLogout={() => window.location.href = '/api/logout'}
+          onProfileClick={() => setShowUserProfile(true)}
+          onNotificationClick={() => setActiveTab('notifications')}
+        />
+      </div>
 
-      {/* Mobile Overlay */}
+      {/* Mobile Overlay for Sidebar */}
       {!sidebarCollapsed && (
         <div
           className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
@@ -339,17 +341,14 @@ export default function AdvancedDashboard() {
         />
       )}
 
-      {/* Advanced Sidebar */}
+      {/* Desktop Sidebar - Hidden on mobile */}
       <aside className={cn(
-        "fixed top-0 left-0 h-full z-40 transition-all duration-300 ease-in-out",
+        "hidden lg:fixed top-0 left-0 h-full z-40 transition-all duration-300 ease-in-out",
         "border-r backdrop-blur-xl",
         darkMode 
           ? "bg-gradient-to-b from-slate-900/95 via-slate-800/95 to-slate-900/95 border-slate-700" 
           : "bg-gradient-to-b from-white/95 via-slate-50/95 to-white/95 border-slate-200",
-        sidebarCollapsed ? "w-20" : "w-80",
-        "lg:translate-x-0",
-        sidebarCollapsed && "lg:w-20",
-        !sidebarCollapsed && "-translate-x-full lg:translate-x-0"
+        sidebarCollapsed ? "w-20" : "w-80"
       )}>
         {/* Sidebar Header */}
         <div className="p-6 border-b border-slate-200 dark:border-slate-700">
@@ -483,28 +482,24 @@ export default function AdvancedDashboard() {
         "pt-16 lg:pt-0", // Add top padding for mobile navbar
         sidebarCollapsed ? "lg:ml-20" : "lg:ml-80"
       )}>
-        {/* Top Navigation - Desktop Only */}
+        {/* Desktop Top Navigation - Hidden on mobile */}
         <header className={cn(
           "hidden lg:block sticky top-0 z-30 border-b transition-colors duration-300 border-slate-200 dark:border-slate-700",
           "backdrop-blur-xl bg-white/90 dark:bg-slate-900/90"
         )}>
           <div className="flex items-center justify-between h-16 px-6">
-            {/* Mobile Logo & Menu */}
+            {/* Desktop Sidebar Toggle */}
             <div className="flex items-center space-x-4">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-                className="lg:hidden"
               >
                 <Menu className="w-5 h-5" />
               </Button>
-              <div className="lg:hidden">
-                <LogoIcon size="xs" />
-              </div>
             </div>
             
-            {/* Search */}
+            {/* Desktop Search */}
             <div className="flex-1 max-w-xl mx-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />

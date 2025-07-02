@@ -122,10 +122,10 @@ export function MobileNavbar({
     <>
       {/* Mobile Navbar */}
       <div className={cn(
-        "lg:hidden sticky top-0 z-50 w-full border-b transition-colors duration-300",
+        "fixed top-0 left-0 right-0 z-50 w-full border-b transition-colors duration-300",
         "bg-gradient-to-r from-white via-gray-50 to-white",
         "dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-800 dark:to-slate-900",
-        "border-slate-200 dark:border-slate-700",
+        "border-slate-200 dark:border-slate-700 shadow-sm",
         className
       )}>
         <div className="flex items-center justify-between h-16 px-4">

@@ -546,22 +546,22 @@ const UniversityDashboard = () => {
           </div>
         </div>
 
-        {/* Circular Profile Panel - Appears within webpage */}
+        {/* Circular Profile Panel - Right positioned with gradient background */}
         {showProfile && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[60] flex items-center justify-end p-4 pr-8">
             {/* Backdrop */}
             <div 
               className="absolute inset-0 bg-black/40 backdrop-blur-sm"
               onClick={() => setShowProfile(false)}
             />
             
-            {/* Circular Profile Panel */}
+            {/* Circular Profile Panel with Enhanced Gradient */}
             <div className={cn(
               "relative w-80 h-80 rounded-full shadow-2xl border-4 overflow-hidden",
               "transform transition-all duration-300 scale-100",
               darkMode 
-                ? "bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 border-slate-600" 
-                : "bg-gradient-to-br from-white via-gray-50 to-white border-gray-300"
+                ? "bg-gradient-to-br from-blue-900/95 via-purple-900/95 to-slate-900/95 border-blue-500/50" 
+                : "bg-gradient-to-br from-blue-50/95 via-purple-50/95 to-gray-100/95 border-blue-300/50"
             )}>
               {/* Close Button */}
               <Button
@@ -569,8 +569,8 @@ const UniversityDashboard = () => {
                 size="sm"
                 onClick={() => setShowProfile(false)}
                 className={cn(
-                  "absolute top-4 right-4 w-8 h-8 p-0 rounded-full z-10",
-                  darkMode ? "text-slate-400 hover:text-white hover:bg-slate-700" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                  "absolute top-4 right-4 w-8 h-8 p-0 rounded-full z-10 backdrop-blur-sm",
+                  darkMode ? "text-blue-300 hover:text-white hover:bg-blue-800/50" : "text-blue-600 hover:text-blue-800 hover:bg-blue-200/50"
                 )}
               >
                 <X className="w-4 h-4" />
@@ -579,7 +579,10 @@ const UniversityDashboard = () => {
               {/* Profile Content */}
               <div className="flex flex-col items-center justify-center h-full p-8 text-center">
                 {/* Avatar */}
-                <Avatar className="w-20 h-20 mb-4 ring-4 ring-blue-500/30">
+                <Avatar className={cn(
+                  "w-20 h-20 mb-4 ring-4",
+                  darkMode ? "ring-blue-400/40" : "ring-blue-500/40"
+                )}>
                   <AvatarImage src="" />
                   <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-2xl">
                     {user?.firstName?.[0] || user?.username?.[0] || 'U'}
@@ -599,7 +602,15 @@ const UniversityDashboard = () => {
                 )}>
                   {user?.email}
                 </p>
-                <Badge variant="outline" className="mb-6 capitalize">
+                <Badge 
+                  variant="outline" 
+                  className={cn(
+                    "mb-6 capitalize border-2",
+                    darkMode 
+                      ? "border-blue-400/50 text-blue-300 bg-blue-900/30" 
+                      : "border-blue-500/50 text-blue-700 bg-blue-50/50"
+                  )}
+                >
                   {user?.role}
                 </Badge>
 
@@ -608,7 +619,12 @@ const UniversityDashboard = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="w-full"
+                    className={cn(
+                      "w-full border-2 backdrop-blur-sm",
+                      darkMode 
+                        ? "border-blue-400/50 text-blue-300 hover:bg-blue-800/50 hover:text-white" 
+                        : "border-blue-500/50 text-blue-700 hover:bg-blue-100/50 hover:text-blue-800"
+                    )}
                     onClick={() => {
                       setActiveTab('profile');
                       setShowProfile(false);
@@ -620,7 +636,7 @@ const UniversityDashboard = () => {
                   <Button
                     variant="destructive"
                     size="sm"
-                    className="w-full"
+                    className="w-full bg-red-600/90 hover:bg-red-700/90 border-red-500/50 border-2"
                     onClick={() => {
                       handleLogout();
                       setShowProfile(false);

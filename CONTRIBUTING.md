@@ -1,267 +1,379 @@
 # Contributing to Academic Management Platform
 
-Thank you for considering contributing to the Academic Management Platform! This document provides guidelines and information for contributors.
+Thank you for your interest in contributing to the Academic Management Platform! This document provides guidelines and information for contributors.
 
-## Table of Contents
+## 🚀 Quick Start
 
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [Code Style](#code-style)
-- [Commit Guidelines](#commit-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Issue Reporting](#issue-reporting)
-- [Architecture Guidelines](#architecture-guidelines)
-
-## Getting Started
-
-### Prerequisites
-
-Before contributing, ensure you have:
-
-- Node.js 20 or higher
-- PostgreSQL database access
-- Git configured with your GitHub account
-- Basic knowledge of React, TypeScript, and Express.js
-
-### Fork and Clone
-
-1. Fork the repository on GitHub
-2. Clone your fork locally:
+1. **Fork the repository**
+2. **Clone your fork:**
    ```bash
-   git clone https://github.com/YOUR_USERNAME/AcademicCRM.git
+   git clone https://github.com/your-username/AcademicCRM.git
    cd AcademicCRM
    ```
-
-## Development Setup
-
-1. Install dependencies:
+3. **Install dependencies:**
    ```bash
-   ./scripts/install-deps.sh
+   npm install
    ```
-
-2. Copy environment variables:
+4. **Set up environment:**
    ```bash
    cp .env.example .env
+   # Edit .env with your database credentials
    ```
-
-3. Set up your database:
+5. **Initialize database:**
    ```bash
    npm run db:push
    ```
-
-4. Start development server:
+6. **Start development server:**
    ```bash
    npm run dev
    ```
 
-## Code Style
+## 📋 Development Guidelines
 
-### TypeScript Guidelines
+### Code Style
 
-- Use TypeScript for all new code
-- Define proper interfaces and types
-- Prefer `interface` over `type` for object shapes
-- Use strict mode and avoid `any` type
+- **TypeScript**: Use TypeScript for all new code
+- **ESLint**: Follow the existing ESLint configuration
+- **Prettier**: Code formatting is handled automatically
+- **Naming**: Use camelCase for variables, PascalCase for components
 
-### React Guidelines
+### Architecture Patterns
 
-- Use functional components with hooks
-- Implement proper error boundaries
-- Follow React best practices for performance
-- Use React Query for server state management
-
-### CSS Guidelines
-
-- Use Tailwind CSS utility classes
-- Follow mobile-first responsive design
-- Use semantic HTML elements
-- Maintain consistent spacing and typography
-
-### Database Guidelines
-
-- Use Drizzle ORM for all database operations
-- Define proper relations in schema
-- Use migrations for schema changes
-- Follow PostgreSQL naming conventions
-
-## Commit Guidelines
-
-We follow conventional commits specification:
-
-### Format
-```
-<type>(<scope>): <description>
-
-[optional body]
-
-[optional footer]
-```
-
-### Types
-
-- `feat`: New feature
-- `fix`: Bug fix
-- `docs`: Documentation changes
-- `style`: Code style changes (formatting, missing semi-colons, etc)
-- `refactor`: Code changes that neither fix bugs nor add features
-- `test`: Adding or updating tests
-- `chore`: Maintenance tasks
-
-### Examples
-
-```bash
-feat(auth): add role-based access control
-fix(api): resolve course enrollment validation
-docs(readme): update deployment instructions
-style(ui): improve button component styling
-refactor(db): optimize course queries
-test(auth): add unit tests for login flow
-chore(deps): update dependencies to latest versions
-```
-
-## Pull Request Process
-
-1. **Create a feature branch**:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-2. **Make your changes**:
-   - Write clean, documented code
-   - Add/update tests as needed
-   - Ensure all tests pass
-
-3. **Test your changes**:
-   ```bash
-   npm run check
-   npm run build
-   ```
-
-4. **Commit your changes**:
-   ```bash
-   git add .
-   git commit -m "feat(scope): description of changes"
-   ```
-
-5. **Push to your fork**:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-6. **Create a Pull Request**:
-   - Use a clear title and description
-   - Reference any related issues
-   - Include screenshots for UI changes
-   - Ensure CI/CD pipeline passes
-
-### Pull Request Checklist
-
-- [ ] Code follows project style guidelines
-- [ ] Self-review completed
-- [ ] Tests added/updated and passing
-- [ ] Documentation updated if needed
-- [ ] No breaking changes (or clearly documented)
-- [ ] Performance impact considered
-- [ ] Security implications reviewed
-
-## Issue Reporting
-
-When reporting issues, please include:
-
-### Bug Reports
-
-- **Description**: Clear description of the issue
-- **Steps to Reproduce**: Detailed steps to recreate
-- **Expected Behavior**: What should happen
-- **Actual Behavior**: What actually happens
-- **Environment**: OS, browser, Node.js version
-- **Screenshots**: If applicable
-
-### Feature Requests
-
-- **Description**: Clear description of the feature
-- **Use Case**: Why this feature is needed
-- **Acceptance Criteria**: How to know when it's complete
-- **Mockups**: If applicable
-
-## Architecture Guidelines
+- **Frontend**: React functional components with hooks
+- **Backend**: Express.js with service layer architecture
+- **Database**: Drizzle ORM with schema-first approach
+- **Validation**: Zod schemas for all data validation
+- **Error Handling**: Consistent error responses across API
 
 ### File Structure
 
 ```
-├── client/                 # React frontend
-│   ├── src/
-│   │   ├── components/    # Reusable UI components
-│   │   ├── pages/         # Page components
-│   │   ├── hooks/         # Custom React hooks
-│   │   └── lib/           # Utilities and config
-├── server/                # Express backend
-│   ├── services/          # Business logic
-│   └── ...               # Server configuration
-├── shared/               # Shared types and schemas
-└── scripts/              # Build and deployment scripts
+├── client/src/
+│   ├── components/     # Reusable UI components
+│   ├── pages/         # Route components
+│   ├── hooks/         # Custom React hooks
+│   └── lib/           # Utilities and configuration
+├── server/
+│   ├── services/      # Business logic
+│   ├── routes.ts      # API endpoints
+│   ├── storage.ts     # Database operations
+│   └── auth.ts        # Authentication logic
+├── shared/
+│   └── schema.ts      # Database schema and types
+└── scripts/           # Deployment and utility scripts
 ```
 
-### Adding New Features
+## 🛠️ Development Process
 
-1. **Database Changes**:
-   - Update `shared/schema.ts`
-   - Add relations if needed
-   - Run `npm run db:push`
+### 1. Feature Development
 
-2. **API Endpoints**:
-   - Add to `server/routes.ts`
-   - Use proper validation
-   - Implement in `server/storage.ts`
+1. **Create a feature branch:**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
 
-3. **Frontend Components**:
-   - Create in appropriate directory
-   - Use TypeScript interfaces
-   - Follow existing patterns
+2. **Make your changes:**
+   - Follow existing code patterns
+   - Add TypeScript types for new features
+   - Include proper error handling
 
-4. **Testing**:
-   - Add unit tests for utilities
-   - Test API endpoints
-   - Test UI components
+3. **Test your changes:**
+   ```bash
+   npm run check      # TypeScript checking
+   npm run dev        # Test locally
+   ```
 
-### Security Considerations
+4. **Commit your changes:**
+   ```bash
+   git add .
+   git commit -m "feat: add your feature description"
+   ```
 
-- Validate all inputs
-- Use parameterized queries
-- Implement proper authentication
-- Follow OWASP guidelines
-- Sanitize file uploads
+### 2. Database Changes
 
-### Performance Guidelines
+When modifying the database schema:
 
-- Optimize database queries
-- Use React Query for caching
-- Implement proper loading states
-- Minimize bundle sizes
-- Use lazy loading where appropriate
+1. **Update schema:**
+   ```typescript
+   // In shared/schema.ts
+   export const newTable = pgTable("new_table", {
+     id: serial("id").primaryKey(),
+     // ... other fields
+   });
+   ```
 
-## Getting Help
+2. **Update types:**
+   ```typescript
+   export type NewTable = typeof newTable.$inferSelect;
+   export type InsertNewTable = typeof newTable.$inferInsert;
+   ```
 
-- **Documentation**: Check the README and code comments
-- **Issues**: Search existing issues before creating new ones
-- **Discussions**: Use GitHub Discussions for questions
-- **Community**: Be respectful and constructive
+3. **Update storage interface:**
+   ```typescript
+   // In server/storage.ts
+   export interface IStorage {
+     // Add new methods
+     getNewTable(id: number): Promise<NewTable | undefined>;
+     createNewTable(data: InsertNewTable): Promise<NewTable>;
+   }
+   ```
 
-## Code of Conduct
+4. **Push schema changes:**
+   ```bash
+   npm run db:push
+   ```
 
-By participating in this project, you agree to abide by our Code of Conduct:
+### 3. API Development
 
-- Be respectful and inclusive
-- Accept constructive criticism
-- Focus on what's best for the community
-- Show empathy towards other contributors
+When adding new API endpoints:
 
-## Recognition
+1. **Add route:**
+   ```typescript
+   // In server/routes.ts
+   app.get("/api/new-endpoint", requireAuth, async (req, res) => {
+     try {
+       const result = await storage.getNewData();
+       res.json(result);
+     } catch (error) {
+       res.status(500).json({ message: "Error message" });
+     }
+   });
+   ```
 
-Contributors will be recognized in:
+2. **Add validation:**
+   ```typescript
+   const newDataSchema = z.object({
+     field: z.string().min(1),
+   });
+   
+   app.post("/api/new-endpoint", requireAuth, async (req, res) => {
+     try {
+       const data = newDataSchema.parse(req.body);
+       // Process data
+     } catch (error) {
+       res.status(400).json({ message: "Validation error" });
+     }
+   });
+   ```
 
-- README.md contributors section
-- Release notes for significant contributions
-- Special mentions for outstanding contributions
+### 4. Frontend Development
 
-Thank you for contributing to the Academic Management Platform!
+When adding new components:
+
+1. **Create component:**
+   ```typescript
+   // components/new-component.tsx
+   interface NewComponentProps {
+     data: SomeType;
+     onAction: (id: number) => void;
+   }
+   
+   export default function NewComponent({ data, onAction }: NewComponentProps) {
+     // Component implementation
+   }
+   ```
+
+2. **Add to page:**
+   ```typescript
+   // pages/some-page.tsx
+   import NewComponent from "@/components/new-component";
+   ```
+
+3. **Use TanStack Query:**
+   ```typescript
+   const { data, isLoading } = useQuery({
+     queryKey: ['/api/some-data'],
+     enabled: !!someCondition,
+   });
+   ```
+
+## 🧪 Testing
+
+### Manual Testing
+
+1. **Test all user roles:**
+   - Create accounts for student, lecturer, admin
+   - Test role-specific features
+
+2. **Test database operations:**
+   - Create, read, update operations
+   - Test with different database types
+
+3. **Test deployment:**
+   ```bash
+   npm run build
+   npm start
+   ```
+
+### Automated Testing (Future)
+
+We plan to add:
+- Unit tests for utilities and services
+- Integration tests for API endpoints
+- E2E tests for critical user flows
+
+## 📝 Documentation
+
+### Code Documentation
+
+- **Comments**: Add JSDoc comments for functions
+- **README**: Update README.md for new features
+- **API**: Document new endpoints in README
+
+### Example JSDoc:
+
+```typescript
+/**
+ * Calculates the final grade for a student based on assignments
+ * @param assignments - Array of assignment submissions
+ * @param weights - Grade weights for each assignment
+ * @returns Final calculated grade as percentage
+ */
+function calculateFinalGrade(assignments: Assignment[], weights: number[]): number {
+  // Implementation
+}
+```
+
+## 🔒 Security Guidelines
+
+### Authentication
+
+- **Always use requireAuth middleware** for protected routes
+- **Validate user permissions** before operations
+- **Hash passwords** using the existing auth system
+
+### Database Security
+
+- **Use parameterized queries** (automatic with Drizzle)
+- **Validate all inputs** with Zod schemas
+- **Sanitize file uploads** using existing upload middleware
+
+### API Security
+
+- **Rate limiting**: Implement for public endpoints
+- **Input validation**: Always validate request data
+- **Error handling**: Don't expose sensitive information
+
+## 📦 Deployment
+
+### Before Submitting
+
+1. **Test locally:**
+   ```bash
+   npm run dev
+   ```
+
+2. **Check TypeScript:**
+   ```bash
+   npm run check
+   ```
+
+3. **Test build:**
+   ```bash
+   npm run build
+   ```
+
+4. **Test deployment script:**
+   ```bash
+   ./scripts/deploy.sh local
+   ```
+
+## 🐛 Bug Reports
+
+When reporting bugs:
+
+1. **Use GitHub Issues**
+2. **Include reproduction steps**
+3. **Provide environment details:**
+   - Node.js version
+   - Database type
+   - Operating system
+   - Browser (for frontend issues)
+
+### Bug Report Template
+
+```markdown
+**Bug Description**
+Brief description of the bug
+
+**Steps to Reproduce**
+1. Go to...
+2. Click on...
+3. See error
+
+**Expected Behavior**
+What should happen
+
+**Actual Behavior**
+What actually happens
+
+**Environment**
+- Node.js version:
+- Database:
+- OS:
+- Browser:
+
+**Additional Context**
+Any other relevant information
+```
+
+## 💡 Feature Requests
+
+For new features:
+
+1. **Check existing issues** to avoid duplicates
+2. **Describe the use case** and problem it solves
+3. **Provide mockups** if applicable
+4. **Consider implementation complexity**
+
+### Feature Request Template
+
+```markdown
+**Feature Description**
+Clear description of the requested feature
+
+**Problem Statement**
+What problem does this solve?
+
+**Proposed Solution**
+How should this work?
+
+**Alternatives Considered**
+Other approaches you've thought about
+
+**Additional Context**
+Mockups, examples, or other relevant information
+```
+
+## 🏆 Recognition
+
+Contributors will be:
+- **Listed in README.md**
+- **Mentioned in release notes**
+- **Credited in commit history**
+
+## 📞 Getting Help
+
+- **GitHub Discussions**: For questions and ideas
+- **GitHub Issues**: For bugs and feature requests
+- **Documentation**: Check README.md and DEPLOYMENT.md
+
+## 📜 Code of Conduct
+
+### Our Standards
+
+- **Be respectful** and inclusive
+- **Focus on what's best** for the community
+- **Show empathy** towards other community members
+- **Accept constructive criticism** gracefully
+
+### Unacceptable Behavior
+
+- Harassment, trolling, or insulting comments
+- Public or private harassment
+- Publishing others' private information
+- Any conduct that would be inappropriate in a professional setting
+
+---
+
+Thank you for contributing to the Academic Management Platform! Your efforts help make education technology better for institutions worldwide.

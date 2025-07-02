@@ -3,30 +3,27 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-package-lock.json
 
 # Production builds
-/client/dist/
-/dist/
-/build/
+dist/
+build/
 
 # Environment variables
 .env
 .env.local
-.env.production.local
 .env.development.local
+.env.test.local
+.env.production.local
 
 # Database
 *.db
 *.sqlite
 *.sqlite3
+dev.db
 
 # Logs
 logs/
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Runtime data
 pids/
@@ -36,9 +33,8 @@ pids/
 
 # Coverage directory used by tools like istanbul
 coverage/
-*.lcov
 
-# NYC test coverage
+# nyc test coverage
 .nyc_output/
 
 # Dependency directories
@@ -47,15 +43,6 @@ jspm_packages/
 
 # Optional npm cache directory
 .npm
-
-# Optional eslint cache
-.eslintcache
-
-# Microbundle cache
-.rpt2_cache/
-.rts2_cache_cjs/
-.rts2_cache_es/
-.rts2_cache_umd/
 
 # Optional REPL history
 .node_repl_history
@@ -68,7 +55,6 @@ jspm_packages/
 
 # dotenv environment variables file
 .env
-.env.test
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -84,33 +70,13 @@ jspm_packages/
 .vuepress/dist
 
 # Serverless directories
-.serverless/
+.serverless
 
 # FuseBox cache
 .fusebox/
 
 # DynamoDB Local files
 .dynamodb/
-
-# TernJS port file
-.tern-port
-
-# Stores VSCode versions used for testing VSCode extensions
-.vscode-test
-
-# yarn v2
-.yarn/cache
-.yarn/unplugged
-.yarn/build-state.yml
-.yarn/install-state.gz
-.pnp.*
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
 
 # OS generated files
 .DS_Store
@@ -121,46 +87,35 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
-# Uploads directory (for production)
-uploads/
-!uploads/.gitkeep
-
-# Backup files
-*.backup
-*.bak
-*.tmp
-
-# Security files
-*.pem
-*.key
-*.crt
-
-# Local development
-.replit
-.replit.nix
-.breakpoints
-.upm/
-
-# Deployment
-.vercel
-.netlify
-fly.toml.backup
-
-# Testing
-/coverage
-/test-results
-playwright-report/
-test-results/
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
 
 # Temporary files
 *.tmp
 *.temp
-/tmp/
 
-# Error logs
-error.log
-access.log
+# Upload directories
+uploads/
+public/uploads/
 
-# Database migrations
-/migrations/temp/
-/drizzle/
+# Migration files (generated)
+migrations/*.sql
+
+# Docker
+.dockerignore
+
+# Replit specific
+.replit
+replit.nix
+.config/
+
+# Generated files
+generated-icon.png
+
+# Backup files
+*.bak
+*.backup

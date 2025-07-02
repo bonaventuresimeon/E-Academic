@@ -1,5 +1,5 @@
-// Prisma schema file - Modern alternative to drizzle-kit
-// This is your database schema definition file
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
   provider = "prisma-client-js"
@@ -11,37 +11,41 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  username  String   @unique
-  email     String   @unique
-  password  String
-  role      String   @default("student")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  username    String   @unique
+  email       String   @unique
+  phoneNumber String?  @unique @map("phone_number")
+  password    String
+  role        String
+  firstName   String   @map("first_name")
+  lastName    String   @map("last_name")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   // Relations
-  enrollments     Enrollment[]
-  submissions     Submission[]
-  lecturedCourses Course[]
-  recommendations AiRecommendation[]
-  syllabi        GeneratedSyllabus[]
+  taughtCourses    Course[]
+  enrollments      Enrollment[]
+  submissions      Submission[]
+  aiRecommendations AiRecommendation[]
+  generatedSyllabi GeneratedSyllabus[]
+  passwordResets   PasswordReset[]
 
   @@map("users")
 }
 
 model Course {
-  id             Int    @id @default(autoincrement())
-  title          String
-  description    String
-  department     String
-  credits        Int
-  maxEnrollment  Int
-  lecturerId     Int
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id          Int      @id @default(autoincrement())
+  title       String
+  code        String   @unique
+  description String?
+  credits     Int
+  department  String
+  lecturerId  Int?     @map("lecturer_id")
+  syllabusUrl String?  @map("syllabus_url")
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
 
   // Relations
-  lecturer    User         @relation(fields: [lecturerId], references: [id])
+  lecturer    User?        @relation(fields: [lecturerId], references: [id])
   enrollments Enrollment[]
   assignments Assignment[]
 
@@ -49,28 +53,27 @@ model Course {
 }
 
 model Enrollment {
-  id       Int    @id @default(autoincrement())
-  courseId Int
-  studentId Int
-  status   String @default("pending")
-  createdAt DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  courseId   Int      @map("course_id")
+  studentId  Int      @map("student_id")
+  status     String   @default("pending")
+  enrolledAt DateTime @default(now()) @map("enrolled_at")
 
   // Relations
   course  Course @relation(fields: [courseId], references: [id])
   student User   @relation(fields: [studentId], references: [id])
 
-  @@unique([courseId, studentId])
   @@map("enrollments")
 }
 
 model Assignment {
-  id          Int      @id @default(autoincrement())
-  courseId    Int
+  id          Int       @id @default(autoincrement())
+  courseId    Int       @map("course_id")
   title       String
-  description String
-  dueDate     DateTime
-  maxPoints   Int
-  createdAt   DateTime @default(now())
+  description String?
+  dueDate     DateTime? @map("due_date")
+  maxPoints   Int?      @map("max_points")
+  createdAt   DateTime  @default(now()) @map("created_at")
 
   // Relations
   course      Course       @relation(fields: [courseId], references: [id])
@@ -80,29 +83,43 @@ model Assignment {
 }
 
 model Submission {
-  id               Int      @id @default(autoincrement())
-  assignmentId     Int
-  studentId        Int
-  textSubmission   String?
-  fileUrl          String?
-  grade            Int?
-  feedback         String?
-  submittedAt      DateTime @default(now())
+  id           Int       @id @default(autoincrement())
+  assignmentId Int       @map("assignment_id")
+  studentId    Int       @map("student_id")
+  content      String?
+  filePath     String?   @map("file_path")
+  submittedAt  DateTime  @default(now()) @map("submitted_at")
+  grade        Decimal?
+  feedback     String?
+  gradedAt     DateTime? @map("graded_at")
 
   // Relations
   assignment Assignment @relation(fields: [assignmentId], references: [id])
   student    User       @relation(fields: [studentId], references: [id])
 
-  @@unique([assignmentId, studentId])
   @@map("submissions")
 }
 
+model PasswordReset {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("password_resets")
+}
+
 model AiRecommendation {
-  id             Int      @id @default(autoincrement())
-  userId         Int
-  interests      String
+  id              Int      @id @default(autoincrement())
+  userId          Int      @map("user_id")
+  interests       String
   recommendations Json
-  createdAt      DateTime @default(now())
+  createdAt       DateTime @default(now()) @map("created_at")
 
   // Relations
   user User @relation(fields: [userId], references: [id])
@@ -111,14 +128,14 @@ model AiRecommendation {
 }
 
 model GeneratedSyllabus {
-  id               Int      @id @default(autoincrement())
-  userId           Int
-  courseTitle      String
-  courseDescription String
-  duration         Int
-  credits          Int
-  syllabus         Json
-  createdAt        DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  userId            Int      @map("user_id")
+  courseTitle       String   @map("course_title")
+  courseDescription String   @map("course_description")
+  duration          Int
+  credits           Int
+  syllabus          Json
+  createdAt         DateTime @default(now()) @map("created_at")
 
   // Relations
   user User @relation(fields: [userId], references: [id])

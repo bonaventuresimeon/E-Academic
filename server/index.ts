@@ -38,8 +38,8 @@ app.use((req, res, next) => {
 
 (async () => {
   // Test database connection on startup
-  const { testDatabaseConnection } = await import("./storage");
-  await testDatabaseConnection();
+  const { testPrismaConnection } = await import("./prisma-client");
+  await testPrismaConnection();
   
   const server = await registerRoutes(app);
 

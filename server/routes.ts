@@ -1,8 +1,7 @@
 import express, { type Request, Response, Router } from "express";
 import { z } from "zod";
-import { insertUserSchema, insertCourseSchema, insertEnrollmentSchema, insertAssignmentSchema, insertSubmissionSchema, users as usersTable, type User } from "@shared/schema";
-import { db } from "./database";
-import { storage } from "./storage";
+import { insertUserSchema, insertCourseSchema, insertEnrollmentSchema, insertAssignmentSchema, insertSubmissionSchema, type User } from "@shared/schema";
+import { storage } from "./prisma-storage";
 import { setupAuth } from "./auth";
 import { upload, handleFileUpload } from "./services/fileUpload";
 import { generateCourseRecommendations, generateSyllabus } from "./services/ai";
@@ -455,7 +454,7 @@ export function registerRoutes(app: express.Express) {
     }
 
     try {
-      const usersList = await db.select().from(usersTable);
+      const usersList = await storage.getAllUsers();
       res.json(usersList);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch users" });

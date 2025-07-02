@@ -1,5 +1,5 @@
-# Academic Management Platform - Complete Documentation
-## Enterprise-Grade Educational CRM with 95% Deployment Success Rate
+# E-Academic Platform - Complete Documentation
+## Professional Academic Management System with Responsive Dashboard Design
 
 ### 🎯 Table of Contents
 1. [Quick Start](#quick-start)
@@ -15,35 +15,46 @@
 
 ## Quick Start
 
-### One-Command Setup
+### Local Development Setup (3 Minutes)
 ```bash
-# Universal deployment for all platforms
-./scripts/universal-deployment.sh
-```
+# Clone repository
+git clone <repository-url>
+cd e-academic-platform
 
-### Localhost Development (5 Minutes)
-```bash
-# Setup localhost environment
-./scripts/setup-localhost.sh
+# Install dependencies
+npm install
+
+# Setup environment variables
+cp .env.example .env
+# Add your PostgreSQL DATABASE_URL and SESSION_SECRET
+
+# Initialize database
+npx prisma generate
+npx prisma db push
 
 # Start development server
 npm run dev
 
-# Access application
-open http://localhost:5000
+# Access application at http://localhost:5000
 ```
 
-### Production Deployment
+### Test Credentials
 ```bash
-# Deploy to Render (recommended)
-git push origin main
+# Admin Account
+Username: admin
+Password: admin123
 
-# Deploy to Vercel
-npx vercel --prod
-
-# Deploy to Fly.io
-flyctl launch --copy-config
+# Student Account
+Username: testuser
+Password: password123
 ```
+
+### Key Features Available
+- **Desktop**: Advanced sidebar with full navigation and user stats
+- **Mobile**: Advanced menubar with touch-optimized overlays
+- **Profile Management**: Comprehensive user profile with activity tracking
+- **Notifications**: Complete notification system with filtering
+- **Real-time Database**: Full PostgreSQL connectivity with Prisma ORM
 
 ---
 

@@ -1,7 +1,7 @@
-# Academic Management Platform
-## Enterprise Educational CRM with Zero Vulnerabilities & 95% Deployment Success
+# E-Academic Platform
+## Professional Academic Management System with Advanced Dashboard & Mobile Responsive Design
 
-A comprehensive Academic Management Platform featuring a futuristic gaming-style HUD interface, built for universities and educational institutions with enterprise-grade reliability and modern secure packages.
+A comprehensive E-Academic Platform featuring a professional dashboard interface with responsive design architecture, built for universities and educational institutions. Features advanced sidebar for desktop and advanced menubar for mobile with complete database connectivity.
 
 [![Security](https://img.shields.io/badge/Vulnerabilities-0-brightgreen)](./DOCUMENTATION.md)
 [![Deployment Success](https://img.shields.io/badge/Deployment%20Success-95%25-brightgreen)](./DOCUMENTATION.md)
@@ -11,56 +11,63 @@ A comprehensive Academic Management Platform featuring a futuristic gaming-style
 [![Express](https://img.shields.io/badge/Express-4.21.2-green?logo=express)](./DOCUMENTATION.md)
 [![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
 
-## 🚀 Quick Start (5 Minutes)
+## 🚀 Quick Start (3 Minutes)
 
-### Universal Setup
+### Development Setup
 ```bash
-# One command for all platforms
-./scripts/universal-deployment.sh
-```
+# Clone repository
+git clone <repository-url>
+cd e-academic-platform
 
-### Localhost Development
-```bash
-# Setup development environment
-./scripts/setup-localhost.sh
+# Install dependencies
+npm install
 
-# Start server
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your PostgreSQL DATABASE_URL
+
+# Initialize database
+npx prisma generate
+npx prisma db push
+
+# Start development server
 npm run dev
 
-# Access application
-open http://localhost:5000
+# Access application at http://localhost:5000
 ```
 
-### Production Deployment
+### Test Credentials
 ```bash
-# Deploy to Render (recommended)
-git push origin main
+# Admin Account
+Username: admin
+Password: admin123
 
-# Deploy to Vercel
-npx vercel --prod
-
-# Deploy to Fly.io
-flyctl launch --copy-config
+# Student Account  
+Username: testuser
+Password: password123
 ```
 
 ## ✨ Key Features
 
-- **🎮 Futuristic HUD Design** - Gaming-style interface with matrix animations
-- **👥 Role-Based Access** - Students, Lecturers, Administrators
-- **🤖 AI-Powered** - Course recommendations and syllabus generation
-- **🌐 Multi-Platform** - 95% success rate across 5 deployment platforms
-- **🔒 Enterprise Security** - Session-based auth with comprehensive protection
-- **📊 Real-Time Analytics** - Performance tracking and insights
+- **💼 Professional Dashboard** - Clean, enterprise-grade interface with responsive design
+- **📱 Responsive Architecture** - Advanced sidebar for desktop, advanced menubar for mobile
+- **👥 Role-Based Access** - Students, Lecturers, Administrators with comprehensive permissions
+- **🔄 Real-Time Database** - Full PostgreSQL connectivity with Prisma ORM
+- **🔔 Advanced Notifications** - Complete notification system with filtering and settings
+- **👤 User Profile Management** - Comprehensive profile panel with activity tracking
+- **🎯 Dashboard Analytics** - Performance metrics and activity monitoring
+- **🔒 Secure Authentication** - Session-based auth with password recovery system
 
 ## 🏗️ Tech Stack (Latest Secure Versions)
 
-- **Frontend**: React 19.1.0 + TypeScript + Tailwind CSS + Shadcn/UI
-- **Backend**: Express 4.21.2 + TypeScript + Modern Database Tools
-- **Database**: PostgreSQL with Prisma ORM + Connection Pooling
-- **Build Tools**: Vite 6.x + ESBuild + tsx + Modern Bundlers
-- **AI**: OpenAI GPT-4 5.8.2 integration
-- **Security**: Zero vulnerabilities + Latest secure packages
-- **Deployment**: Universal support (Render, Fly.io, Vercel, GitHub Pages)
+- **Frontend**: React 19.x + TypeScript + Tailwind CSS + Shadcn/UI + Wouter Router
+- **Backend**: Express 4.21.2 + TypeScript + Passport.js Authentication
+- **Database**: PostgreSQL with Prisma ORM + Session Store + Connection Pooling
+- **UI Components**: Radix UI + Lucide Icons + Custom Advanced Components
+- **Build Tools**: Vite 6.x + ESBuild + TypeScript 5.x
+- **Authentication**: Session-based auth with bcrypt password hashing
+- **Responsive Design**: Advanced Sidebar (desktop) + Advanced Menubar (mobile)
+- **Deployment**: Multi-platform support (Render, Fly.io, Vercel, Replit)
 
 ## 📚 Documentation
 
@@ -85,98 +92,76 @@ flyctl launch --copy-config
 ## 🛠️ Development Scripts
 
 ```bash
-npm run dev              # Start development server
+npm run dev              # Start development server (Express + Vite)
 npm run build            # Production build
-npm run db:push          # Update database schema
-./scripts/universal-deployment.sh  # Universal deployment menu
-./scripts/setup-localhost.sh       # Setup localhost development
+npx prisma generate      # Generate Prisma client
+npx prisma db push       # Push schema changes to database
+npx prisma studio        # Open Prisma database browser
 ```
 
-## 🔧 Installation (Updated January 2025)
+## 🏗️ Installation & Architecture
 
-### Prerequisites Verified
-- **Node.js**: 20.18.1+ (tested and compatible)
-- **npm**: 11.4.2+ (latest stable)
-- **PostgreSQL**: 12+ (for full-stack deployment)
+### Prerequisites
+- **Node.js**: 18.x or 20.x (recommended)
+- **npm**: Latest stable version  
+- **PostgreSQL**: 12+ (local or cloud database)
 - **Git**: For version control
 
-### Quick Install (Recommended)
+### Environment Variables
 ```bash
-# Clone repository
-git clone <repository-url>
-cd academic-management-platform
-
-# Automated setup (includes dependencies and database)
-./scripts/setup-localhost.sh
-
-# Start development server
-npm run dev
+# Required in .env file
+DATABASE_URL="postgresql://username:password@localhost:5432/e_academic"
+SESSION_SECRET="your-session-secret-key"
 ```
 
-### Manual Install (Step by Step)
+### Database Schema
+The application uses Prisma ORM with the following core entities:
+- **Users**: Authentication and role management (student, lecturer, admin)
+- **Courses**: Course catalog with department organization
+- **Enrollments**: Student-course relationships
+- **Assignments**: Course assignments with file upload support
+- **Submissions**: Student assignment submissions with grading
+- **Sessions**: Secure session management
+
+## 🌐 Features Overview
+
+### Dashboard Components
+- **AdvancedSidebar** (Desktop): Full navigation with search, user stats, and quick actions
+- **AdvancedMiniMenubar** (Mobile): Touch-optimized command center with overlays
+- **AdvancedUserProfilePanel**: Multi-tab profile with settings, activity, and preferences
+- **AdvancedNotifications**: Complete notification system with filtering and management
+
+### API Endpoints
 ```bash
-# 1. Install dependencies (zero vulnerabilities)
-npm install
+# Authentication
+GET /api/auth/user                    # Get current user
+POST /api/auth/login                  # User login
+POST /api/auth/register               # User registration
 
-# 2. Setup environment
-cp .env.example .env.local
-# Edit .env.local with your PostgreSQL connection
-
-# 3. Database setup (choose one)
-# Option A: Using existing Drizzle
-npm run db:push
-
-# Option B: Using new Prisma setup
-npx prisma generate
-npx prisma db push
-
-# 4. Build application (verified working)
-npm run build
-
-# 5. Start development
-npm run dev
+# Dashboard Data
+GET /api/dashboard/stats              # Role-based statistics
+GET /api/courses/extended             # Course data with enrollments
+GET /api/assignments/extended         # Assignment tracking with submissions
+GET /api/notifications                # User notifications
+GET /api/activity/recent              # User activity timeline
+GET /api/user/preferences             # User preferences and settings
 ```
 
-### Security & Installation Verification ✅
-```bash
-✅ npm audit: 0 vulnerabilities found
-✅ Build process: Working (frontend + backend)
-✅ TypeScript: Compiling successfully
-✅ Dependencies: All latest compatible versions
-✅ Engine warnings: Eliminated via .npmrc config
-✅ Application: Running on port 5000
-✅ Database: Connected and operational
-✅ Package ecosystem: 100% secure and modern
-```
-
-#### Latest Package Versions (January 2025)
-```json
-{
-  "react": "19.1.0",
-  "typescript": "latest",
-  "vite": "6.x",
-  "express": "4.21.2",
-  "prisma": "6.11.0",
-  "tailwindcss": "latest",
-  "openai": "5.8.2"
-}
-```
+### Contact Information
+- **Organization**: Bonaventure
+- **Email**: contact@bonaventure.org.ng  
+- **Phone**: +234 (081) 2222-5406
+- **Location**: Awka, Anambra, Nigeria
 
 ## 🎯 Project Status
 
-**✅ Production Ready** with:
-- Updated packages (January 2025)
-- Security vulnerabilities fixed
-- 95% deployment success across all platforms
-- Enterprise-grade architecture
-- Comprehensive documentation
-
-## 📞 Support
-
-- **Universal Help**: `./scripts/universal-deployment.sh` (option 9)
-- **Documentation**: [DOCUMENTATION.md](./DOCUMENTATION.md)
-- **Issues**: Create GitHub issues for bugs
-- **Contributing**: See [DOCUMENTATION.md](./DOCUMENTATION.md#contributing)
+**✅ Production Ready** - E-Academic Platform with:
+- Professional responsive dashboard design
+- Complete database integration with PostgreSQL + Prisma
+- Advanced component system with desktop/mobile optimization
+- Secure authentication with session management
+- Real-time notifications and user profile management
+- Updated to latest secure package versions (2025)
 
 ## 📄 License
 
@@ -184,4 +169,4 @@ MIT License - see [LICENSE](./LICENSE) for details.
 
 ---
 
-*Built for educational institutions worldwide with enterprise reliability and 95% deployment success guarantee.*
+*E-Academic Platform - Professional Academic Management System built for educational institutions worldwide.*

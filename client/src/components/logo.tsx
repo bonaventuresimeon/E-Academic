@@ -23,7 +23,7 @@ export function Logo({ className, variant = "default", size = "md" }: LogoProps)
 
   return (
     <div className={cn("flex items-center space-x-3", className)}>
-      {/* Academic CRM Logo Icon */}
+      {/* E-Academic Logo Icon */}
       <div className={cn("relative", sizeClasses[size])}>
         <svg
           viewBox="0 0 40 40"
@@ -72,15 +72,7 @@ export function Logo({ className, variant = "default", size = "md" }: LogoProps)
           variant === "dark" ? "text-slate-900" :
           "text-slate-900 dark:text-white"
         )}>
-          Academic
-        </span>
-        <span className={cn(
-          "text-sm font-medium leading-none",
-          variant === "light" ? "text-blue-100" :
-          variant === "dark" ? "text-slate-600" :
-          "text-blue-600 dark:text-blue-400"
-        )}>
-          CRM
+          E-Academic
         </span>
       </div>
     </div>

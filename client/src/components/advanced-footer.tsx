@@ -48,7 +48,7 @@ export function AdvancedFooter({
             <div className="flex items-center space-x-3">
               <LogoIcon size="xs" className="text-blue-600 dark:text-blue-400" />
               <div className="text-sm text-slate-600 dark:text-slate-400">
-                © {currentYear} Academic-CRM. All rights reserved.
+                © {currentYear} E-Academic. All rights reserved.
               </div>
             </div>
             
@@ -92,7 +92,7 @@ export function AdvancedFooter({
               <LogoIcon size="md" className="text-blue-600 dark:text-blue-400" />
               <div>
                 <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                  Academic-CRM
+                  E-Academic
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
                   Academic Management Platform
@@ -232,7 +232,7 @@ export function AdvancedFooter({
                   Ready to transform your academic management?
                 </h5>
                 <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
-                  Join thousands of educational institutions using Academic-CRM
+                  Join thousands of educational institutions using E-Academic
                 </p>
               </div>
               <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3">
@@ -259,7 +259,7 @@ export function AdvancedFooter({
             
             {/* Copyright */}
             <div className="flex items-center space-x-4 text-sm text-slate-600 dark:text-slate-400">
-              <span>© {currentYear} Academic-CRM. All rights reserved.</span>
+              <span>© {currentYear} E-Academic. All rights reserved.</span>
               <span>•</span>
               <span>Made with</span>
               <Heart className="w-4 h-4 text-red-500 fill-current" />

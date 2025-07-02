@@ -58,6 +58,7 @@ interface AdvancedSidebarProps {
   onNotificationClick?: () => void;
   onSettingsClick?: () => void;
   onLogout?: () => void;
+  onCollapseChange?: (isCollapsed: boolean) => void;
   className?: string;
 }
 
@@ -90,6 +91,7 @@ export function AdvancedSidebar({
   onNotificationClick,
   onSettingsClick,
   onLogout,
+  onCollapseChange,
   className = ""
 }: AdvancedSidebarProps) {
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -115,6 +117,13 @@ export function AdvancedSidebar({
       setNotifications(unreadCount);
     }
   }, [notificationData]);
+
+  // Notify parent when collapse state changes
+  useEffect(() => {
+    if (onCollapseChange) {
+      onCollapseChange(isCollapsed);
+    }
+  }, [isCollapsed, onCollapseChange]);
 
   const menuItems: MenuItem[] = [
     {

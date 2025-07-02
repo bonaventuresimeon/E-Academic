@@ -89,7 +89,7 @@ interface DashboardStats {
 }
 
 export default function ProfessionalDashboard({ user }: { user: User }) {
-
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAdvancedProfileOpen, setIsAdvancedProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -144,6 +144,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           onNotificationClick={() => setIsNotificationsOpen(true)}
           onSettingsClick={() => setIsSettingsOpen(true)}
           onLogout={() => window.location.href = '/api/logout'}
+          onCollapseChange={(isCollapsed) => setIsSidebarCollapsed(isCollapsed)}
         />
       </div>
 
@@ -157,7 +158,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
         />
       </div>
 
-      <div className="dashboard-content">
+      <div className={`dashboard-content ${isSidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}`}>
 
 
       {/* Main Dashboard Content */}
@@ -610,6 +611,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           flex: 1;
           overflow-x: hidden;
           margin-top: 4rem; /* Space for mobile menubar */
+          transition: margin-left 0.3s ease;
         }
 
         /* Desktop Layout */
@@ -625,6 +627,14 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           .dashboard-content {
             margin-left: 20rem; /* Space for sidebar */
             margin-top: 0;
+          }
+          
+          .dashboard-content.sidebar-expanded {
+            margin-left: 20rem; /* 320px - expanded sidebar width */
+          }
+          
+          .dashboard-content.sidebar-collapsed {
+            margin-left: 5rem; /* 80px - collapsed sidebar width */
           }
         }
 

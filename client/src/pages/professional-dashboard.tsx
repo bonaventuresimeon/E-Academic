@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { AdvancedUserProfile } from "@/components/advanced-user-profile";
+import { AdvancedMiniMenubar } from "@/components/advanced-mini-menubar";
+import { AdvancedUserProfilePanel } from "@/components/advanced-user-profile-panel";
+import { AdvancedNotifications } from "@/components/advanced-notifications";
 import {
   Search,
   Bell,
@@ -87,6 +90,9 @@ interface DashboardStats {
 export default function ProfessionalDashboard({ user }: { user: User }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isAdvancedProfileOpen, setIsAdvancedProfileOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   // Fetch dashboard data
   const { data: stats } = useQuery<DashboardStats>({
@@ -599,6 +605,19 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           </div>
         </div>
       </footer>
+
+      {/* Advanced Components */}
+      <AdvancedUserProfilePanel
+        isOpen={isAdvancedProfileOpen}
+        onClose={() => setIsAdvancedProfileOpen(false)}
+        user={user}
+      />
+
+      <AdvancedNotifications
+        isOpen={isNotificationsOpen}
+        onClose={() => setIsNotificationsOpen(false)}
+        user={user}
+      />
 
       {/* User Profile Modal */}
       <AdvancedUserProfile

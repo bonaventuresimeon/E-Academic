@@ -89,7 +89,7 @@ interface DashboardStats {
 }
 
 export default function ProfessionalDashboard({ user }: { user: User }) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isAdvancedProfileOpen, setIsAdvancedProfileOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
@@ -132,16 +132,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
     });
   };
 
-  // Close mobile menu on resize
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setMobileMenuOpen(false);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+
 
   return (
     <div className="dashboard-layout">
@@ -173,19 +164,11 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
           {/* Left Navigation */}
           <div className="nav-left">
             <div className="flex items-center gap-2">
-              <button
-                className="md:hidden p-2 text-gray-600 hover:text-gray-900"
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              >
-                {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-              </button>
-              <div className="flex items-center gap-2">
-                <GraduationCap className="h-8 w-8 text-blue-600" />
-                <span className="font-bold text-xl text-gray-900">E-Academic</span>
-              </div>
+              <GraduationCap className="h-8 w-8 text-blue-600" />
+              <span className="font-bold text-xl text-gray-900">E-Academic</span>
             </div>
             
-            <ul className={`nav-menu ${mobileMenuOpen ? 'block' : 'hidden md:flex'}`}>
+            <ul className="nav-menu hidden md:flex">
               <li><a href="#" className="nav-link active">Dashboard</a></li>
               <li><a href="#" className="nav-link">Courses</a></li>
               <li><a href="#" className="nav-link">Assignments</a></li>
@@ -585,17 +568,20 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
             {/* Contact & Newsletter */}
             <div className="footer-section">
               <h3 className="footer-title">Contact</h3>
-              <div className="footer-contact-item">
-                <Mail className="footer-contact-icon" />
-                <span>support@e-academic.com</span>
-              </div>
-              <div className="footer-contact-item">
-                <Phone className="footer-contact-icon" />
-                <span>+1 (555) 123-4567</span>
-              </div>
-              <div className="footer-contact-item">
-                <MapPin className="footer-contact-icon" />
-                <span>San Francisco, CA</span>
+              {/* Contact Info */}
+              <div className="pt-4 space-y-2">
+                <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+                  <Mail className="w-4 h-4" />
+                  <span>contact@bonaventure.org.ng</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+                  <Phone className="w-4 h-4" />
+                  <span>+234 (081) 2222-5406</span>
+                </div>
+                <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
+                  <MapPin className="w-4 h-4" />
+                  <span>Awka, Anambra, Nigeria</span>
+                </div>
               </div>
               
               <div className="footer-newsletter">

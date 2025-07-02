@@ -207,15 +207,15 @@ export function AdvancedFooter({
             <div className="pt-4 space-y-2">
               <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
                 <Mail className="w-4 h-4" />
-                <span>support@academic-crm.com</span>
+                <span>contact@bonaventure.org.ng</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
                 <Phone className="w-4 h-4" />
-                <span>+1 (555) 123-4567</span>
+                <span>+234 (081) )2222-5406</span>
               </div>
               <div className="flex items-center space-x-2 text-sm text-slate-600 dark:text-slate-400">
                 <MapPin className="w-4 h-4" />
-                <span>San Francisco, CA</span>
+                <span>Awka, Anambra, Nigeria</span>
               </div>
             </div>
           </div>

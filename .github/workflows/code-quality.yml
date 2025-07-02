@@ -1,0 +1,59 @@
+name: Code Quality Checks
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code-quality:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: TypeScript Check
+      run: npm run check
+      
+    - name: Code Formatting Check
+      run: |
+        npx prettier --check "**/*.{ts,tsx,js,jsx,json,md}"
+        
+    - name: Lint Check
+      run: |
+        if [ -f ".eslintrc.js" ] || [ -f ".eslintrc.json" ] || [ -f "eslint.config.js" ]; then
+          npx eslint . --ext .ts,.tsx,.js,.jsx
+        else
+          echo "No ESLint configuration found, skipping..."
+        fi
+        
+    - name: Bundle Size Check
+      run: |
+        npm run build
+        npx bundlesize
+        
+    - name: License Check
+      uses: fossa-contrib/fossa-action@v2
+      with:
+        api-key: ${{ secrets.FOSSA_API_KEY }}
+        branch: ${{ github.ref_name }}
+      if: secrets.FOSSA_API_KEY != ''
+        
+    - name: CodeQL Analysis
+      uses: github/codeql-action/init@v3
+      with:
+        languages: javascript
+        
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v3

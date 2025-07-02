@@ -336,6 +336,49 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
     }
   });
 
+  // Health check endpoints
+  app.get("/api/health", (req, res) => {
+    res.json({
+      status: "healthy",
+      timestamp: new Date().toISOString(),
+      uptime: process.uptime(),
+      version: process.env.npm_package_version || "1.0.0",
+      environment: process.env.NODE_ENV || "development"
+    });
+  });
+
+  app.get("/api/health/detailed", async (req, res) => {
+    try {
+      // Test database connection
+      await storage.getUserStats();
+      
+      res.json({
+        status: "healthy",
+        timestamp: new Date().toISOString(),
+        uptime: process.uptime(),
+        version: process.env.npm_package_version || "1.0.0",
+        environment: process.env.NODE_ENV || "development",
+        database: {
+          status: "connected",
+          type: process.env.DATABASE_TYPE || "postgresql"
+        },
+        memory: {
+          used: Math.round(process.memoryUsage().heapUsed / 1024 / 1024),
+          total: Math.round(process.memoryUsage().heapTotal / 1024 / 1024)
+        }
+      });
+    } catch (error) {
+      res.status(503).json({
+        status: "unhealthy",
+        timestamp: new Date().toISOString(),
+        error: "Database connection failed",
+        database: {
+          status: "disconnected"
+        }
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -1,0 +1,80 @@
+# GitHub Pages Static Deployment (Frontend Only)
+# For full-stack deployment, use other platforms
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm install --legacy-peer-deps
+      
+    - name: Build frontend only
+      run: |
+        # Build only the frontend for static hosting
+        npm run build:frontend || npx vite build
+        
+        # Create a simple index.html redirect for SPA
+        echo '<!DOCTYPE html>
+        <html>
+        <head>
+          <title>Academic Management Platform</title>
+          <meta http-equiv="refresh" content="0; url=./dist/public/index.html">
+          <script>
+            window.location.href = "./dist/public/index.html";
+          </script>
+        </head>
+        <body>
+          <p>Redirecting to Academic Management Platform...</p>
+          <p><a href="./dist/public/index.html">Click here if not redirected automatically</a></p>
+        </body>
+        </html>' > dist/index.html
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist/public'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+# Note: This deployment only includes the frontend.
+# Backend API functionality will not work with GitHub Pages.
+# For full-stack deployment, use Render, Fly.io, or Vercel.

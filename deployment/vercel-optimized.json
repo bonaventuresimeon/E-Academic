@@ -1,0 +1,95 @@
+{
+  "version": 2,
+  "name": "academic-management-platform",
+  "buildCommand": "npm install --legacy-peer-deps && npm run build:vercel",
+  "outputDirectory": "dist/public",
+  "installCommand": "npm install --legacy-peer-deps --force",
+  "framework": null,
+  "regions": ["iad1"],
+  "functions": {
+    "dist/index.js": {
+      "runtime": "nodejs20.x",
+      "maxDuration": 30,
+      "memory": 512
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "/dist/index.js"
+    },
+    {
+      "source": "/uploads/(.*)",
+      "destination": "/uploads/$1"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/dist/public/$1"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/dist/public/index.html",
+      "permanent": false
+    }
+  ],
+  "env": {
+    "NODE_ENV": "production",
+    "UPLOAD_DIR": "/tmp/uploads",
+    "SESSION_SECRET": "@session_secret",
+    "DATABASE_URL": "@database_url"
+  },
+  "build": {
+    "env": {
+      "NODE_OPTIONS": "--max-old-space-size=2048",
+      "SKIP_PREFLIGHT_CHECK": "true"
+    }
+  },
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, PUT, DELETE, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization, X-Requested-With"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "origin-when-cross-origin"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/health",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}

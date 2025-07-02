@@ -338,5 +338,7 @@ export function registerRoutes(app: express.Express) {
     }
   });
 
-  return app;
+  return app.listen(parseInt(process.env.PORT || "5000"), "0.0.0.0", () => {
+    console.log(`Server running on port ${process.env.PORT || 5000}`);
+  });
 }

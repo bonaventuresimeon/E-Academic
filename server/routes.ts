@@ -1,4 +1,4 @@
-import express, { type Request, Response } from "express";
+import express, { type Request, Response, Router } from "express";
 import { z } from "zod";
 import { insertUserSchema, insertCourseSchema, insertEnrollmentSchema, insertAssignmentSchema, insertSubmissionSchema, type User } from "@shared/schema";
 import { storage } from "./storage";

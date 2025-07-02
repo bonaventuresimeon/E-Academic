@@ -75,13 +75,13 @@ export default function AuthPage() {
   // Don't render forms if user is logged in
   if (user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--muted)' }}>
         <div className="text-center">
-          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary">
-            <GraduationCap className="h-6 w-6 text-primary-foreground" />
+          <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full" style={{ backgroundColor: 'var(--primary)' }}>
+            <GraduationCap className="h-6 w-6" style={{ color: 'var(--primary-foreground)' }} />
           </div>
           <h2 className="mt-6 text-2xl font-bold">Redirecting...</h2>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className="mt-2 text-sm" style={{ color: 'var(--muted-foreground)' }}>
             Welcome back! Taking you to your dashboard.
           </p>
         </div>
@@ -90,18 +90,18 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="flex min-h-screen" style={{ backgroundColor: 'var(--muted)' }}>
       {/* Left side - Forms */}
       <div className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24">
         <div className="mx-auto w-full max-w-md space-y-8">
           <div className="text-center">
-            <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full bg-primary">
-              <GraduationCap className="h-6 w-6 text-primary-foreground" />
+            <div className="mx-auto h-12 w-12 flex items-center justify-center rounded-full" style={{ backgroundColor: 'var(--primary)' }}>
+              <GraduationCap className="h-6 w-6" style={{ color: 'var(--primary-foreground)' }} />
             </div>
             <h2 className="mt-6 text-3xl font-bold tracking-tight">
               Welcome to AcademicCRM
             </h2>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-2 text-sm" style={{ color: 'var(--muted-foreground)' }}>
               Academic Management Platform
             </p>
           </div>
@@ -287,7 +287,7 @@ export default function AuthPage() {
       </div>
 
       {/* Right side - Features showcase */}
-      <div className="hidden lg:block lg:w-1/2 bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-800">
+      <div className="hidden lg:block lg:w-1/2" style={{ background: 'linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, #4f46e5 100%)' }}>
         <div className="flex h-full items-center justify-center p-12">
           <div className="max-w-md text-center text-white">
             <h1 className="text-4xl font-bold mb-8">

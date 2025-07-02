@@ -107,8 +107,8 @@ export default function ModernDashboard() {
   }
 
   if (!user) {
-    window.location.href = '/login';
-    return null;
+    window.location.href = '/auth';
+    return <div>Redirecting to login...</div>;
   }
 
   return (

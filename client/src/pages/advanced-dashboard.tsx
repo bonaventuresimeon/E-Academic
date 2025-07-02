@@ -13,6 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Logo, LogoIcon } from "@/components/logo";
 import { AdvancedUserProfile } from "@/components/advanced-user-profile";
 import { AdvancedFooter } from "@/components/advanced-footer";
+import { MobileNavbar } from "@/components/mobile-navbar";
 import {
   Bell,
   BookOpen,
@@ -322,6 +323,14 @@ export default function AdvancedDashboard() {
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100"
     )}>
+      {/* Mobile Navbar */}
+      <MobileNavbar
+        user={user}
+        onLogout={() => window.location.href = '/api/logout'}
+        onProfileClick={() => setShowUserProfile(true)}
+        onNotificationClick={() => setActiveTab('notifications')}
+      />
+
       {/* Mobile Overlay */}
       {!sidebarCollapsed && (
         <div
@@ -471,16 +480,13 @@ export default function AdvancedDashboard() {
       {/* Main Content */}
       <main className={cn(
         "transition-all duration-300 min-h-screen",
+        "pt-16 lg:pt-0", // Add top padding for mobile navbar
         sidebarCollapsed ? "lg:ml-20" : "lg:ml-80"
       )}>
-        {/* Top Navigation */}
+        {/* Top Navigation - Desktop Only */}
         <header className={cn(
-          "sticky top-0 z-30 border-b transition-colors duration-300 border-slate-200 dark:border-slate-700",
-          // Mobile: solid gradient backgrounds (no transparency)
-          "bg-gradient-to-r from-white via-gray-50 to-white",
-          "dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-800 dark:to-slate-900",
-          // Desktop: transparent blur backgrounds
-          "lg:backdrop-blur-xl lg:bg-white/90 lg:dark:bg-slate-900/90"
+          "hidden lg:block sticky top-0 z-30 border-b transition-colors duration-300 border-slate-200 dark:border-slate-700",
+          "backdrop-blur-xl bg-white/90 dark:bg-slate-900/90"
         )}>
           <div className="flex items-center justify-between h-16 px-6">
             {/* Mobile Logo & Menu */}

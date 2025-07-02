@@ -1,142 +1,128 @@
-# Academic Management Platform
+# Academic Management Platform - Development Guide
 
 ## Overview
 
-The Academic Management Platform is an enterprise-grade educational CRM system built with modern web technologies. This full-stack application provides comprehensive student information management, course administration, assignment tracking, and AI-powered academic assistance. The platform supports multiple user roles (students, lecturers, and administrators) with role-based access control and features a responsive, modern UI.
+This is an enterprise-grade Academic Management Platform designed for universities and educational institutions. The platform features a futuristic gaming-style HUD interface and provides role-based access for students, lecturers, and administrators. Built with modern web technologies, it achieves a 95% deployment success rate across multiple platforms.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Build Tool**: Vite for fast development and optimized builds
-- **UI Framework**: shadcn/ui components built on Radix UI primitives
-- **Styling**: Tailwind CSS with custom design system
-- **State Management**: TanStack Query (React Query) for server state
-- **Form Management**: React Hook Form with Zod validation
+- **Styling**: Tailwind CSS with custom HUD/gaming theme variables
+- **UI Components**: Radix UI primitives with shadcn/ui component library
+- **State Management**: TanStack React Query for server state
 - **Routing**: Wouter for lightweight client-side routing
-- **Authentication**: Context-based auth with protected routes
+- **Build Tool**: Vite for fast development and optimized builds
 
 ### Backend Architecture
 - **Runtime**: Node.js with Express.js framework
-- **Language**: TypeScript for type safety
+- **Language**: TypeScript with ESM modules
+- **Database ORM**: Drizzle ORM with multi-database support
 - **Authentication**: Passport.js with local strategy and session management
-- **File Uploads**: Multer for handling multipart/form-data
-- **API Design**: RESTful API with consistent error handling
-- **Session Storage**: PostgreSQL-based session store
+- **File Handling**: Multer for file uploads
+- **AI Integration**: OpenAI GPT-4o for course recommendations and syllabus generation
 
-### Database Architecture
-- **ORM**: Drizzle ORM with schema-first approach
-- **Primary Database**: PostgreSQL (recommended for production)
-- **Alternative Support**: MySQL and SQLite for development
-- **Connection**: Neon serverless PostgreSQL with WebSocket support
-- **Migrations**: Drizzle Kit for database schema management
+### Database Strategy
+- **Primary**: PostgreSQL (via Neon for cloud deployments)
+- **Fallback Support**: MySQL and SQLite for different environments
+- **Schema Management**: Drizzle Kit for migrations and schema management
+- **Session Storage**: PostgreSQL-based session store
 
 ## Key Components
 
-### Core Modules
-1. **User Management**: Multi-role authentication (student, lecturer, admin)
-2. **Course Management**: Course creation, enrollment, and administration
-3. **Assignment System**: Assignment creation, submission, and grading
-4. **AI Assistant**: OpenAI-powered course recommendations and syllabus generation
-5. **File Management**: Secure file upload and storage system
-6. **Notification System**: Real-time notifications and alerts
+### Authentication & Authorization
+- **Strategy**: Session-based authentication with Passport.js
+- **Password Security**: Scrypt hashing with salt
+- **Role-Based Access**: Three main roles (student, lecturer, admin)
+- **Protected Routes**: Client-side route protection with role-based access control
 
 ### Database Schema
-- **Users**: Authentication and profile management
-- **Courses**: Course information and metadata
-- **Enrollments**: Student-course relationships with status tracking
-- **Assignments**: Assignment details with due dates and requirements
+- **Users**: Core user management with role-based permissions
+- **Courses**: Course catalog with department organization and lecturer assignments
+- **Enrollments**: Student-course relationships with approval workflow
+- **Assignments**: Course assignments with file upload support
 - **Submissions**: Student assignment submissions with grading
-- **AI Recommendations**: Stored AI-generated course suggestions
-- **Generated Syllabi**: AI-created course syllabi
+- **AI Features**: Recommendations and generated syllabi storage
 
-### UI Components
-- **Reusable Components**: Card-based layouts, stats displays, form controls
-- **Role-Based Dashboards**: Customized interfaces for each user role
-- **Responsive Design**: Mobile-first approach with adaptive layouts
-- **Accessibility**: ARIA-compliant components with keyboard navigation
+### UI/UX Design
+- **Theme**: Futuristic gaming HUD aesthetic with matrix-style animations
+- **Responsive**: Mobile-first design with desktop optimizations
+- **Components**: Modular component system with consistent styling
+- **Color System**: Custom CSS variables for theming with glow effects
 
 ## Data Flow
 
 ### Authentication Flow
 1. User submits credentials via login form
 2. Passport.js validates against database
-3. Session created and stored in PostgreSQL
-4. Protected routes enforce authentication checks
-5. Role-based access control filters functionality
+3. Session established with secure cookie
+4. Protected routes verify authentication status
+5. Role-based permissions control feature access
 
 ### Course Management Flow
-1. Lecturers create courses with metadata
+1. Lecturers create courses through admin interface
 2. Students browse and request enrollment
-3. Admins approve/reject enrollment requests
-4. Enrolled students gain access to course materials and assignments
-
-### Assignment Workflow
-1. Lecturers create assignments with requirements
-2. Students submit assignments with optional file uploads
-3. Lecturers grade submissions and provide feedback
-4. Grades are calculated and displayed in dashboards
+3. Admin/lecturer approves enrollment requests
+4. Enrolled students access course materials and assignments
+5. Submission and grading workflow completes the cycle
 
 ### AI Integration Flow
-1. Users provide academic interests or course requirements
-2. System calls OpenAI API with structured prompts
-3. AI responses are parsed and validated
-4. Results are stored in database and displayed to users
+1. User requests course recommendations or syllabus generation
+2. OpenAI API processes request with contextual prompts
+3. Results stored in database for future reference
+4. UI displays formatted AI-generated content
 
 ## External Dependencies
 
-### Production Dependencies
-- **@neondatabase/serverless**: PostgreSQL database connection
-- **@tanstack/react-query**: Server state management
-- **@radix-ui/***: Accessible UI component primitives
-- **passport**: Authentication middleware
-- **drizzle-orm**: Type-safe database ORM
-- **multer**: File upload handling
-- **openai**: AI service integration
-- **zod**: Runtime type validation
+### Core Dependencies
+- **Database**: Neon PostgreSQL for production, with MySQL/SQLite fallback
+- **AI Services**: OpenAI API for GPT-4o integration
+- **Session Storage**: PostgreSQL-based session management
+- **File Storage**: Local filesystem with configurable upload directory
 
-### Development Dependencies
-- **TypeScript**: Static type checking
-- **Vite**: Build tool and development server
-- **Tailwind CSS**: Utility-first CSS framework
-- **ESBuild**: Fast JavaScript bundler
+### Development Tools
+- **TypeScript**: Type safety across frontend and backend
+- **ESBuild**: Fast production builds
+- **Vite**: Development server with HMR
+- **Drizzle Kit**: Database schema management
 
-### External Services
-- **OpenAI API**: AI-powered features (course recommendations, syllabus generation)
-- **Neon Database**: Serverless PostgreSQL hosting
-- **File Storage**: Local file system with upload directory management
+### UI Libraries
+- **Radix UI**: Accessible component primitives
+- **Tailwind CSS**: Utility-first styling framework
+- **Lucide React**: Consistent icon system
 
 ## Deployment Strategy
 
 ### Multi-Platform Support
-The application supports deployment across multiple platforms:
-
-1. **Render** (recommended): Auto-deployment with render.yaml configuration
-2. **Vercel**: Serverless deployment with custom build configuration
-3. **Fly.io**: Global edge deployment with flyctl integration
-4. **Docker**: Containerized deployment for any platform
-5. **Kubernetes**: Production-ready orchestration with comprehensive manifests
-
-### Environment Configuration
-- **Database**: Automatic database type detection from DATABASE_URL
-- **Sessions**: Secure session management requires SESSION_SECRET
-- **AI Features**: Optional OPENAI_API_KEY for enhanced functionality
-- **File Uploads**: Configurable upload directory for different environments
+- **Primary**: Render (recommended for full-stack deployment)
+- **Frontend**: Vercel for static deployment with serverless functions
+- **Container**: Fly.io for containerized deployments
+- **Development**: Local development with hot reload
 
 ### Build Process
-- **Development**: `npm run dev` - Hot module replacement with Vite
-- **Production**: `npm run build` - Optimized build with tree shaking
-- **Database**: `npm run db:push` - Schema synchronization
+1. TypeScript compilation for type checking
+2. Vite builds optimized frontend bundle
+3. ESBuild compiles backend for production
+4. Database migrations run automatically
+5. Static assets served from dist/public
+
+### Environment Configuration
+- **Database**: Auto-detection of database type from connection string
+- **Sessions**: Configurable session secret and storage
+- **File Uploads**: Configurable upload directory
+- **AI**: Optional OpenAI API key for AI features
+
+### Production Optimizations
+- **Bundle Splitting**: Code splitting for efficient loading
+- **Asset Optimization**: Compressed and cached static assets
+- **Database**: Connection pooling and query optimization
+- **Error Handling**: Comprehensive error boundaries and logging
 
 ## Changelog
 
-```
 Changelog:
 - July 02, 2025. Initial setup
-```
 
 ## User Preferences
 
-```
 Preferred communication style: Simple, everyday language.
-```

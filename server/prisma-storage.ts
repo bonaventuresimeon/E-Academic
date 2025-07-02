@@ -39,7 +39,7 @@ export interface IStorage {
 
   // Enrollment operations
   getEnrollment(courseId: number, studentId: number): Promise<Enrollment | undefined>;
-  getEnrollmentsByStudent(studentId: number): Promise<Enrollment[]>;
+  getEnrollmentsByStudent(studentId: number): Promise<(Enrollment & { course: Course })[]>;
   getEnrollmentsByCourse(courseId: number): Promise<Enrollment[]>;
   getPendingEnrollments(): Promise<Enrollment[]>;
   createEnrollment(enrollment: InsertEnrollment): Promise<Enrollment>;
@@ -145,6 +145,11 @@ export class PrismaStorage implements IStorage {
 
   // Course operations
   async getCourse(id: number): Promise<Course | undefined> {
+    console.log('Debug - getCourse called with id:', id, typeof id);
+    if (id === undefined || id === null || isNaN(id)) {
+      console.error('Debug - getCourse called with invalid id:', id);
+      return undefined;
+    }
     const course = await prisma.course.findUnique({ where: { id } });
     return course || undefined;
   }
@@ -186,11 +191,14 @@ export class PrismaStorage implements IStorage {
     return enrollment || undefined;
   }
 
-  async getEnrollmentsByStudent(studentId: number): Promise<Enrollment[]> {
-    return await prisma.enrollment.findMany({
+  async getEnrollmentsByStudent(studentId: number): Promise<(Enrollment & { course: Course })[]> {
+    console.log('Debug - getEnrollmentsByStudent called with studentId:', studentId);
+    const result = await prisma.enrollment.findMany({
       where: { studentId },
       include: { course: true }
     });
+    console.log('Debug - getEnrollmentsByStudent result:', result.length, result);
+    return result;
   }
 
   async getEnrollmentsByCourse(courseId: number): Promise<Enrollment[]> {

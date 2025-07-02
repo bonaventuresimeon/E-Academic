@@ -182,8 +182,104 @@ export function registerRoutes(app: express.Express) {
     }
   });
 
+  app.get("/api/courses/extended", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      console.log('=== DEBUG COURSES EXTENDED START ===');
+      const userId = req.user.id;
+      const userRole = req.user.role;
+      console.log('Debug - userId:', userId, 'userRole:', userRole);
+
+      let courses;
+      
+      if (userRole === 'student') {
+        const enrollments = await storage.getEnrollmentsByStudent(userId);
+        console.log('Debug - User ID:', userId);
+        console.log('Debug - Enrollments found:', enrollments.length);
+        if (enrollments.length > 0) {
+          console.log('Debug - First enrollment:', JSON.stringify(enrollments[0], null, 2));
+        }
+        
+        // Use the course data from include instead of making separate getCourse calls
+        courses = await Promise.all(
+          enrollments.map(async (enrollment) => {
+            console.log('Debug - Processing enrollment:', enrollment);
+            // enrollment should include course data via Prisma include
+            if (!enrollment.course) {
+              console.error('Debug - course data missing from enrollment:', enrollment);
+              return null;
+            }
+            const course = enrollment.course;
+            if (!course) return null;
+            
+            const lecturer = course.lecturerId ? await storage.getUser(course.lecturerId) : null;
+            const allEnrollments = await storage.getEnrollmentsByCourse(course.id);
+            const assignments = await storage.getAssignmentsByCourse(course.id);
+            
+            return {
+              ...course,
+              lecturer,
+              enrollmentCount: allEnrollments.length,
+              isEnrolled: true,
+              assignments
+            };
+          })
+        );
+        courses = courses.filter(Boolean);
+      } else if (userRole === 'lecturer') {
+        const allCourses = await storage.getAllCourses();
+        courses = await Promise.all(
+          allCourses
+            .filter(course => course.lecturerId === userId)
+            .map(async (course) => {
+              const lecturer = await storage.getUser(course.lecturerId!);
+              const allEnrollments = await storage.getEnrollmentsByCourse(course.id);
+              const assignments = await storage.getAssignmentsByCourse(course.id);
+              
+              return {
+                ...course,
+                lecturer,
+                enrollmentCount: allEnrollments.length,
+                isEnrolled: false,
+                assignments
+              };
+            })
+        );
+      } else if (userRole === 'admin') {
+        const allCourses = await storage.getAllCourses();
+        courses = await Promise.all(
+          allCourses.map(async (course) => {
+            const lecturer = course.lecturerId ? await storage.getUser(course.lecturerId) : null;
+            const allEnrollments = await storage.getEnrollmentsByCourse(course.id);
+            const assignments = await storage.getAssignmentsByCourse(course.id);
+            
+            return {
+              ...course,
+              lecturer,
+              enrollmentCount: allEnrollments.length,
+              isEnrolled: false,
+              assignments
+            };
+          })
+        );
+      } else {
+        courses = [];
+      }
+
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching extended courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
   app.get("/api/courses/:id", async (req: Request, res: Response): Promise<void> => {
     try {
+      console.log('=== DEBUG COURSES ID ROUTE HIT === with id:', req.params.id);
       const course = await storage.getCourse(parseInt(req.params.id));
       if (!course) {
         res.status(404).json({ message: "Course not found" });
@@ -490,16 +586,31 @@ export function registerRoutes(app: express.Express) {
     }
 
     try {
+      console.log('=== DEBUG COURSES EXTENDED START ===');
       const userId = req.user.id;
       const userRole = req.user.role;
+      console.log('Debug - userId:', userId, 'userRole:', userRole);
 
       let courses;
       
       if (userRole === 'student') {
         const enrollments = await storage.getEnrollmentsByStudent(userId);
+        console.log('Debug - User ID:', userId);
+        console.log('Debug - Enrollments found:', enrollments.length);
+        if (enrollments.length > 0) {
+          console.log('Debug - First enrollment:', JSON.stringify(enrollments[0], null, 2));
+        }
+        
+        // Use the course data from include instead of making separate getCourse calls
         courses = await Promise.all(
           enrollments.map(async (enrollment) => {
-            const course = await storage.getCourse(enrollment.courseId);
+            console.log('Debug - Processing enrollment:', enrollment);
+            // enrollment should include course data via Prisma include
+            if (!enrollment.course) {
+              console.error('Debug - course data missing from enrollment:', enrollment);
+              return null;
+            }
+            const course = enrollment.course;
             if (!course) return null;
             
             const lecturer = course.lecturerId ? await storage.getUser(course.lecturerId) : null;
@@ -811,7 +922,7 @@ export function registerRoutes(app: express.Express) {
       const gradedSubmissions = submissions.filter(s => s.grade !== null);
       
       const avgGrade = gradedSubmissions.length > 0 
-        ? gradedSubmissions.reduce((sum, s) => sum + (s.grade || 0), 0) / gradedSubmissions.length
+        ? gradedSubmissions.reduce((sum, s) => sum + (Number(s.grade) || 0), 0) / gradedSubmissions.length
         : 0;
 
       const stats = {

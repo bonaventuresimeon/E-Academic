@@ -11,7 +11,16 @@ import type {
 } from "@prisma/client";
 
 // Export Prisma types for compatibility
-export type { User, Course, Enrollment, Assignment, Submission, PasswordReset, AiRecommendation, GeneratedSyllabus };
+export type { 
+  User, 
+  Course, 
+  Enrollment, 
+  Assignment, 
+  Submission, 
+  PasswordReset, 
+  AiRecommendation, 
+  GeneratedSyllabus
+};
 
 // Legacy type aliases for backward compatibility
 export type SelectUser = User;
@@ -86,4 +95,63 @@ export const syllabusSchema = z.object({
   courseDescription: z.string().min(1),
   duration: z.number().min(1).max(52),
   credits: z.number().min(1).max(10),
+});
+
+// Quiz and Test schemas
+export const insertQuizSchema = z.object({
+  title: z.string().min(1, "Quiz title is required"),
+  description: z.string().optional(),
+  courseId: z.number().int().positive(),
+  timeLimit: z.number().int().positive().optional(),
+  maxAttempts: z.number().int().positive().default(1),
+  isPublished: z.boolean().default(false),
+  dueDate: z.date().optional(),
+});
+
+export const insertQuestionSchema = z.object({
+  quizId: z.number().int().positive(),
+  type: z.enum(['MULTIPLE_CHOICE', 'TRUE_FALSE', 'SHORT_ANSWER', 'ESSAY', 'FILL_IN_BLANK']),
+  question: z.string().min(1, "Question is required"),
+  options: z.any().optional(),
+  correctAnswer: z.string().min(1, "Correct answer is required"),
+  points: z.number().int().positive().default(1),
+  explanation: z.string().optional(),
+  order: z.number().int().positive(),
+});
+
+export const insertTestSchema = z.object({
+  title: z.string().min(1, "Test title is required"),
+  description: z.string().optional(),
+  courseId: z.number().int().positive(),
+  testType: z.enum(['EXAM', 'QUIZ', 'ASSESSMENT', 'PRACTICE']),
+  duration: z.number().int().positive(),
+  maxMarks: z.number().int().positive(),
+  passingMarks: z.number().int().positive(),
+  startDate: z.date(),
+  endDate: z.date(),
+  isPublished: z.boolean().default(false),
+});
+
+export const insertTestSectionSchema = z.object({
+  testId: z.number().int().positive(),
+  title: z.string().min(1, "Section title is required"),
+  description: z.string().optional(),
+  order: z.number().int().positive(),
+  timeLimit: z.number().int().positive().optional(),
+});
+
+export const insertQuizAttemptSchema = z.object({
+  quizId: z.number().int().positive(),
+  studentId: z.number().int().positive(),
+  maxScore: z.number().positive(),
+});
+
+export const insertTestResultSchema = z.object({
+  testId: z.number().int().positive(),
+  studentId: z.number().int().positive(),
+  score: z.number().positive(),
+  maxScore: z.number().positive(),
+  percentage: z.number().min(0).max(100),
+  grade: z.string().optional(),
+  status: z.enum(['NOT_STARTED', 'IN_PROGRESS', 'COMPLETED', 'EXPIRED']),
 });

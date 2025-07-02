@@ -28,6 +28,10 @@ model User {
   aiRecommendations AiRecommendation[]
   generatedSyllabi GeneratedSyllabus[]
   passwordResets   PasswordReset[]
+  createdQuizzes   Quiz[]       @relation("QuizCreator")
+  quizAttempts     QuizAttempt[]
+  createdTests     Test[]       @relation("TestCreator")
+  testResults      TestResult[]
 
   @@map("users")
 }
@@ -48,6 +52,8 @@ model Course {
   lecturer    User?        @relation(fields: [lecturerId], references: [id])
   enrollments Enrollment[]
   assignments Assignment[]
+  quizzes     Quiz[]
+  tests       Test[]
 
   @@map("courses")
 }
@@ -143,6 +149,153 @@ model GeneratedSyllabus {
   @@map("generated_syllabi")
 }
 
+model Quiz {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String?
+  courseId     Int          @map("course_id")
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdBy    Int          @map("created_by")
+  creator      User         @relation("QuizCreator", fields: [createdBy], references: [id])
+  timeLimit    Int?         @map("time_limit") // in minutes
+  maxAttempts  Int          @default(1) @map("max_attempts")
+  isPublished  Boolean      @default(false) @map("is_published")
+  dueDate      DateTime?    @map("due_date")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  questions    Question[]
+  attempts     QuizAttempt[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id            Int              @id @default(autoincrement())
+  quizId        Int              @map("quiz_id")
+  quiz          Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  type          QuestionType
+  question      String
+  options       Json?            // For multiple choice, true/false
+  correctAnswer String           @map("correct_answer")
+  points        Int              @default(1)
+  explanation   String?
+  order         Int
+  answers       QuestionAnswer[]
+
+  @@map("questions")
+}
+
+model QuizAttempt {
+  id          Int              @id @default(autoincrement())
+  quizId      Int              @map("quiz_id")
+  quiz        Quiz             @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  studentId   Int              @map("student_id")
+  student     User             @relation(fields: [studentId], references: [id])
+  score       Float?
+  maxScore    Float            @map("max_score")
+  startedAt   DateTime         @default(now()) @map("started_at")
+  submittedAt DateTime?        @map("submitted_at")
+  timeSpent   Int?             @map("time_spent") // in seconds
+  answers     QuestionAnswer[]
+
+  @@map("quiz_attempts")
+}
+
+model QuestionAnswer {
+  id           Int         @id @default(autoincrement())
+  questionId   Int         @map("question_id")
+  question     Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptId    Int         @map("attempt_id")
+  attempt      QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  answer       String
+  isCorrect    Boolean     @map("is_correct")
+  pointsEarned Int         @default(0) @map("points_earned")
+
+  @@map("question_answers")
+}
+
+model Test {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String?
+  courseId     Int          @map("course_id")
+  course       Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  createdBy    Int          @map("created_by")
+  creator      User         @relation("TestCreator", fields: [createdBy], references: [id])
+  testType     TestType     @map("test_type")
+  duration     Int          // in minutes
+  maxMarks     Int          @map("max_marks")
+  passingMarks Int          @map("passing_marks")
+  startDate    DateTime     @map("start_date")
+  endDate      DateTime     @map("end_date")
+  isPublished  Boolean      @default(false) @map("is_published")
+  createdAt    DateTime     @default(now()) @map("created_at")
+  sections     TestSection[]
+  results      TestResult[]
+
+  @@map("tests")
+}
+
+model TestSection {
+  id          Int            @id @default(autoincrement())
+  testId      Int            @map("test_id")
+  test        Test           @relation(fields: [testId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  order       Int
+  timeLimit   Int?           @map("time_limit") // in minutes
+  questions   TestQuestion[]
+
+  @@map("test_sections")
+}
+
+model TestQuestion {
+  id            Int                  @id @default(autoincrement())
+  sectionId     Int                  @map("section_id")
+  section       TestSection          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  type          QuestionType
+  question      String
+  options       Json?
+  correctAnswer String               @map("correct_answer")
+  marks         Int                  @default(1)
+  explanation   String?
+  order         Int
+  answers       TestQuestionAnswer[]
+
+  @@map("test_questions")
+}
+
+model TestResult {
+  id          Int                  @id @default(autoincrement())
+  testId      Int                  @map("test_id")
+  test        Test                 @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId   Int                  @map("student_id")
+  student     User                 @relation(fields: [studentId], references: [id])
+  score       Float
+  maxScore    Float                @map("max_score")
+  percentage  Float
+  grade       String?
+  status      TestStatus
+  startedAt   DateTime             @default(now()) @map("started_at")
+  submittedAt DateTime?            @map("submitted_at")
+  timeSpent   Int?                 @map("time_spent") // in seconds
+  answers     TestQuestionAnswer[]
+
+  @@map("test_results")
+}
+
+model TestQuestionAnswer {
+  id          Int          @id @default(autoincrement())
+  questionId  Int          @map("question_id")
+  question    TestQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  resultId    Int          @map("result_id")
+  result      TestResult   @relation(fields: [resultId], references: [id], onDelete: Cascade)
+  answer      String
+  isCorrect   Boolean      @map("is_correct")
+  marksEarned Int          @default(0) @map("marks_earned")
+
+  @@map("test_question_answers")
+}
+
 model Session {
   id        String   @id
   sid       String   @unique
@@ -150,4 +303,26 @@ model Session {
   expiresAt DateTime @map("expires_at")
 
   @@map("session")
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE
+  TRUE_FALSE
+  SHORT_ANSWER
+  ESSAY
+  FILL_IN_BLANK
+}
+
+enum TestType {
+  EXAM
+  QUIZ
+  ASSESSMENT
+  PRACTICE
+}
+
+enum TestStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  EXPIRED
 }

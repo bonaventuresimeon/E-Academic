@@ -71,6 +71,12 @@ export default function Sidebar({ className }: SidebarProps) {
           href: "/ai-assistant",
           badge: "New",
         },
+        {
+          title: "Advanced Dashboard",
+          icon: Settings,
+          href: "/advanced-dashboard",
+          badge: "Pro",
+        },
       ];
     }
 
@@ -100,6 +106,12 @@ export default function Sidebar({ className }: SidebarProps) {
           icon: Brain,
           href: "/ai-assistant",
           badge: null,
+        },
+        {
+          title: "Advanced Dashboard",
+          icon: Settings,
+          href: "/advanced-dashboard",
+          badge: "Pro",
         },
       ];
     }

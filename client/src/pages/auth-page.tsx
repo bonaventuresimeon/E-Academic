@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { GraduationCap, BookOpen, Users, Brain } from "lucide-react";
+import { GraduationCap, BookOpen, Users, Brain, Key, ArrowLeft, Mail } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -27,15 +27,33 @@ const registerSchema = z.object({
   role: z.enum(["student", "lecturer", "admin"], {
     required_error: "Please select a role",
   }),
+  phoneNumber: z.string().optional().nullable(),
+});
+
+const passwordRecoverySchema = z.object({
+  identifier: z.string().min(1, "Email or phone number is required"),
+});
+
+const passwordResetSchema = z.object({
+  token: z.string().min(1, "Reset token is required"),
+  newPassword: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string().min(6, "Please confirm your password"),
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
 });
 
 type LoginFormData = z.infer<typeof loginSchema>;
 type RegisterFormData = z.infer<typeof registerSchema>;
+type PasswordRecoveryFormData = z.infer<typeof passwordRecoverySchema>;
+type PasswordResetFormData = z.infer<typeof passwordResetSchema>;
 
 export default function AuthPage() {
-  const { user, loginMutation, registerMutation } = useAuth();
+  const { user, loginMutation, registerMutation, passwordRecoveryMutation, passwordResetMutation } = useAuth();
   const [, setLocation] = useLocation();
   const [isLogin, setIsLogin] = useState(true);
+  const [showPasswordRecovery, setShowPasswordRecovery] = useState(false);
+  const [passwordResetStep, setPasswordResetStep] = useState<"request" | "reset">("request");
 
   const loginForm = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
@@ -54,6 +72,23 @@ export default function AuthPage() {
       firstName: "",
       lastName: "",
       role: "student",
+      phoneNumber: null,
+    },
+  });
+
+  const passwordRecoveryForm = useForm<PasswordRecoveryFormData>({
+    resolver: zodResolver(passwordRecoverySchema),
+    defaultValues: {
+      identifier: "",
+    },
+  });
+
+  const passwordResetForm = useForm<PasswordResetFormData>({
+    resolver: zodResolver(passwordResetSchema),
+    defaultValues: {
+      token: "",
+      newPassword: "",
+      confirmPassword: "",
     },
   });
 
@@ -70,6 +105,25 @@ export default function AuthPage() {
 
   const onRegister = (data: RegisterFormData) => {
     registerMutation.mutate(data);
+  };
+
+  const onPasswordRecovery = (data: PasswordRecoveryFormData) => {
+    passwordRecoveryMutation.mutate(data, {
+      onSuccess: () => {
+        setPasswordResetStep("reset");
+      },
+    });
+  };
+
+  const onPasswordReset = (data: PasswordResetFormData) => {
+    passwordResetMutation.mutate(data, {
+      onSuccess: () => {
+        setShowPasswordRecovery(false);
+        setPasswordResetStep("request");
+        passwordRecoveryForm.reset();
+        passwordResetForm.reset();
+      },
+    });
   };
 
   // Don't render forms if user is logged in
@@ -133,60 +187,217 @@ export default function AuthPage() {
 
             <TabsContent value="login">
               <div className="card-hud">
-                <div className="mb-6">
-                  <h3 className="text-lg font-bold text-glow">SECURITY ACCESS</h3>
-                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
-                    ENTER AUTHENTICATION CREDENTIALS
-                  </p>
-                </div>
-                <Form {...loginForm}>
-                  <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
-                    <FormField
-                      control={loginForm.control}
-                      name="username"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>USERNAME</FormLabel>
-                          <FormControl>
-                            <input 
-                              className="input-hud" 
-                              placeholder="ENTER USERNAME" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                {!showPasswordRecovery ? (
+                  <>
+                    <div className="mb-6">
+                      <h3 className="text-lg font-bold text-glow">SECURITY ACCESS</h3>
+                      <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                        ENTER AUTHENTICATION CREDENTIALS
+                      </p>
+                    </div>
+                    <Form {...loginForm}>
+                      <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-6">
+                        <FormField
+                          control={loginForm.control}
+                          name="username"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>USERNAME</FormLabel>
+                              <FormControl>
+                                <input 
+                                  className="input-hud" 
+                                  placeholder="ENTER USERNAME" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    <FormField
-                      control={loginForm.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>PASSWORD</FormLabel>
-                          <FormControl>
-                            <input 
-                              type="password" 
-                              className="input-hud" 
-                              placeholder="ENTER PASSWORD" 
-                              {...field} 
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        <FormField
+                          control={loginForm.control}
+                          name="password"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>PASSWORD</FormLabel>
+                              <FormControl>
+                                <input 
+                                  type="password" 
+                                  className="input-hud" 
+                                  placeholder="ENTER PASSWORD" 
+                                  {...field} 
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
 
-                    <button 
-                      type="submit" 
-                      className="btn-hud btn-hud-primary w-full animate-scan animate-energy-pulse"
-                      disabled={loginMutation.isPending}
-                    >
-                      {loginMutation.isPending ? "AUTHENTICATING..." : "INITIATE ACCESS"}
-                    </button>
-                  </form>
-                </Form>
+                        <div className="flex items-center justify-between">
+                          <button
+                            type="button"
+                            onClick={() => setShowPasswordRecovery(true)}
+                            className="text-xs hover:text-glow transition-colors"
+                            style={{ color: 'var(--text-secondary)' }}
+                          >
+                            FORGOT PASSWORD?
+                          </button>
+                        </div>
+
+                        <button 
+                          type="submit" 
+                          className="btn-hud btn-hud-primary w-full animate-scan animate-energy-pulse"
+                          disabled={loginMutation.isPending}
+                        >
+                          {loginMutation.isPending ? "AUTHENTICATING..." : "INITIATE ACCESS"}
+                        </button>
+                      </form>
+                    </Form>
+                  </>
+                ) : (
+                  <>
+                    {passwordResetStep === "request" ? (
+                      <>
+                        <div className="mb-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <button
+                              onClick={() => setShowPasswordRecovery(false)}
+                              className="text-xs hover:text-glow transition-colors"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              <ArrowLeft className="h-3 w-3" />
+                            </button>
+                            <h3 className="text-lg font-bold text-glow">PASSWORD RECOVERY</h3>
+                          </div>
+                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                            ENTER EMAIL OR PHONE FOR RESET TOKEN
+                          </p>
+                        </div>
+                        <Form {...passwordRecoveryForm}>
+                          <form onSubmit={passwordRecoveryForm.handleSubmit(onPasswordRecovery)} className="space-y-6">
+                            <FormField
+                              control={passwordRecoveryForm.control}
+                              name="identifier"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>EMAIL OR PHONE</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-secondary)' }} />
+                                      <input 
+                                        className="input-hud pl-10" 
+                                        placeholder="ENTER EMAIL OR PHONE" 
+                                        {...field} 
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <button 
+                              type="submit" 
+                              className="btn-hud btn-hud-primary w-full animate-scan"
+                              disabled={passwordRecoveryMutation.isPending}
+                            >
+                              {passwordRecoveryMutation.isPending ? "SENDING..." : "REQUEST RESET TOKEN"}
+                            </button>
+                          </form>
+                        </Form>
+                      </>
+                    ) : (
+                      <>
+                        <div className="mb-6">
+                          <div className="flex items-center gap-2 mb-2">
+                            <button
+                              onClick={() => setPasswordResetStep("request")}
+                              className="text-xs hover:text-glow transition-colors"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
+                              <ArrowLeft className="h-3 w-3" />
+                            </button>
+                            <h3 className="text-lg font-bold text-glow">RESET PASSWORD</h3>
+                          </div>
+                          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+                            ENTER RESET TOKEN AND NEW PASSWORD
+                          </p>
+                        </div>
+                        <Form {...passwordResetForm}>
+                          <form onSubmit={passwordResetForm.handleSubmit(onPasswordReset)} className="space-y-6">
+                            <FormField
+                              control={passwordResetForm.control}
+                              name="token"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>RESET TOKEN</FormLabel>
+                                  <FormControl>
+                                    <div className="relative">
+                                      <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-secondary)' }} />
+                                      <input 
+                                        className="input-hud pl-10" 
+                                        placeholder="ENTER RESET TOKEN" 
+                                        {...field} 
+                                      />
+                                    </div>
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={passwordResetForm.control}
+                              name="newPassword"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>NEW PASSWORD</FormLabel>
+                                  <FormControl>
+                                    <input 
+                                      type="password"
+                                      className="input-hud" 
+                                      placeholder="ENTER NEW PASSWORD" 
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <FormField
+                              control={passwordResetForm.control}
+                              name="confirmPassword"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-sm font-semibold" style={{ color: 'var(--text-secondary)' }}>CONFIRM PASSWORD</FormLabel>
+                                  <FormControl>
+                                    <input 
+                                      type="password"
+                                      className="input-hud" 
+                                      placeholder="CONFIRM NEW PASSWORD" 
+                                      {...field} 
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+
+                            <button 
+                              type="submit" 
+                              className="btn-hud btn-hud-primary w-full animate-scan"
+                              disabled={passwordResetMutation.isPending}
+                            >
+                              {passwordResetMutation.isPending ? "RESETTING..." : "RESET PASSWORD"}
+                            </button>
+                          </form>
+                        </Form>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </TabsContent>
 

@@ -15,6 +15,8 @@ type AuthContextType = {
   loginMutation: UseMutationResult<SelectUser, Error, LoginData>;
   logoutMutation: UseMutationResult<void, Error, void>;
   registerMutation: UseMutationResult<SelectUser, Error, InsertUser>;
+  passwordRecoveryMutation: UseMutationResult<any, Error, { identifier: string }>;
+  passwordResetMutation: UseMutationResult<any, Error, { token: string; newPassword: string; confirmPassword: string }>;
 };
 
 type LoginData = Pick<InsertUser, "username" | "password">;
@@ -81,6 +83,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  const passwordRecoveryMutation = useMutation({
+    mutationFn: async (data: { identifier: string }) => {
+      const res = await apiRequest("POST", "/api/password-recovery/request", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Recovery Request Sent",
+        description: "Check your email or phone for the reset token",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Recovery Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const passwordResetMutation = useMutation({
+    mutationFn: async (data: { token: string; newPassword: string; confirmPassword: string }) => {
+      const res = await apiRequest("POST", "/api/password-recovery/reset", data);
+      return await res.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Password Reset Successfully",
+        description: "You can now login with your new password",
+        variant: "default",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Reset Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
   return (
     <AuthContext.Provider
       value={{
@@ -90,6 +134,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         loginMutation,
         logoutMutation,
         registerMutation,
+        passwordRecoveryMutation,
+        passwordResetMutation,
       }}
     >
       {children}

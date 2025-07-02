@@ -550,7 +550,7 @@ export function AdvancedSidebar({
         </button>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .advanced-sidebar {
           width: 20rem;
           height: 100vh;

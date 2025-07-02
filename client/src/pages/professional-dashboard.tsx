@@ -158,62 +158,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
       </div>
 
       <div className="dashboard-content">
-      {/* Professional Header */}
-      <header className="professional-header">
-        <nav className="professional-nav">
-          {/* Left Navigation */}
-          <div className="nav-left">
-            <div className="flex items-center gap-2">
-              <GraduationCap className="h-8 w-8 text-blue-600" />
-              <span className="font-bold text-xl text-gray-900">E-Academic</span>
-            </div>
-            
-            <ul className="nav-menu hidden md:flex">
-              <li><a href="#" className="nav-link active">Dashboard</a></li>
-              <li><a href="#" className="nav-link">Courses</a></li>
-              <li><a href="#" className="nav-link">Assignments</a></li>
-              <li><a href="#" className="nav-link">Gradebook</a></li>
-              <li><a href="#" className="nav-link">Calendar</a></li>
-              <li><a href="#" className="nav-link">Reports</a></li>
-            </ul>
-          </div>
 
-          {/* Search Bar */}
-          <div className="nav-search">
-            <Search className="search-icon" />
-            <input
-              type="text"
-              placeholder="Search courses, assignments, students..."
-              className="search-input"
-            />
-          </div>
-
-          {/* Right Section */}
-          <div className="nav-right">
-            <button className="notification-btn">
-              <Bell className="h-5 w-5" />
-              <span className="notification-badge"></span>
-            </button>
-            
-            <button 
-              className="user-profile-btn"
-              onClick={() => setIsProfileOpen(true)}
-            >
-              <div className="user-avatar">
-                {getInitials(user.firstName, user.lastName, user.username)}
-              </div>
-              <div className="user-info hidden md:block">
-                <div className="user-name">
-                  {user.firstName && user.lastName 
-                    ? `${user.firstName} ${user.lastName}` 
-                    : user.username}
-                </div>
-                <div className="user-role">{formatRole(user.role)}</div>
-              </div>
-            </button>
-          </div>
-        </nav>
-      </header>
 
       {/* Main Dashboard Content */}
       <main className="dashboard-main">
@@ -636,7 +581,7 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
         user={user}
       />
 
-      <style jsx>{`
+      <style>{`
         .dashboard-layout {
           display: flex;
           min-height: 100vh;
@@ -646,6 +591,15 @@ export default function ProfessionalDashboard({ user }: { user: User }) {
 
         .desktop-only {
           display: none;
+        }
+        
+        @media (min-width: 1024px) {
+          .desktop-only {
+            display: block;
+          }
+          .mobile-only {
+            display: none;
+          }
         }
 
         .mobile-only {

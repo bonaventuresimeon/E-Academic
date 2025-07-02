@@ -642,7 +642,7 @@ export function AdvancedUserProfilePanel({ isOpen, onClose, user }: AdvancedUser
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .profile-panel-overlay {
           position: fixed;
           top: 0;

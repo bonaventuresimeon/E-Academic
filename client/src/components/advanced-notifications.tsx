@@ -643,7 +643,7 @@ export function AdvancedNotifications({ isOpen, onClose, user }: AdvancedNotific
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .notifications-overlay {
           position: fixed;
           top: 0;

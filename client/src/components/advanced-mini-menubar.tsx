@@ -477,7 +477,7 @@ export function AdvancedMiniMenubar({
         </div>
       )}
 
-      <style jsx>{`
+      <style>{`
         .advanced-mini-menubar {
           position: fixed;
           top: 0;

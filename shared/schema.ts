@@ -7,10 +7,20 @@ export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   email: text("email").notNull().unique(),
+  phoneNumber: text("phone_number").unique(),
   password: text("password").notNull(),
   role: text("role").notNull(),
   firstName: text("first_name").notNull(),
   lastName: text("last_name").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const passwordResets = pgTable("password_resets", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").references(() => users.id).notNull(),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  used: boolean("used").default(false).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -86,6 +96,14 @@ export const usersRelations = relations(users, ({ many }) => ({
   submissions: many(submissions),
   aiRecommendations: many(aiRecommendations),
   generatedSyllabi: many(generatedSyllabi),
+  passwordResets: many(passwordResets),
+}));
+
+export const passwordResetsRelations = relations(passwordResets, ({ one }) => ({
+  user: one(users, {
+    fields: [passwordResets.userId],
+    references: [users.id],
+  }),
 }));
 
 export const coursesRelations = relations(courses, ({ one, many }) => ({
@@ -154,6 +172,11 @@ export const insertSubmissionSchema = createInsertSchema(submissions).omit({
   gradedAt: true,
 });
 
+export const insertPasswordResetSchema = createInsertSchema(passwordResets).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type SelectUser = User; // Alias for compatibility
@@ -166,3 +189,5 @@ export type Assignment = typeof assignments.$inferSelect;
 export type InsertAssignment = typeof assignments.$inferInsert;
 export type Submission = typeof submissions.$inferSelect;
 export type InsertSubmission = typeof submissions.$inferInsert;
+export type PasswordReset = typeof passwordResets.$inferSelect;
+export type InsertPasswordReset = typeof passwordResets.$inferInsert;

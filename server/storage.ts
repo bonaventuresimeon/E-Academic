@@ -6,6 +6,7 @@ import {
   submissions,
   aiRecommendations,
   generatedSyllabi,
+  passwordResets,
   type User,
   type InsertUser,
   type Course,
@@ -16,6 +17,8 @@ import {
   type InsertAssignment,
   type Submission,
   type InsertSubmission,
+  type PasswordReset,
+  type InsertPasswordReset,
 } from "@shared/schema";
 import { db } from "./database";
 import { eq, and, desc, count } from "drizzle-orm";
@@ -30,7 +33,14 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
+  getUserByPhone(phoneNumber: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUserPassword(id: number, newPassword: string): Promise<User | undefined>;
+
+  // Password reset operations
+  createPasswordReset(reset: InsertPasswordReset): Promise<PasswordReset>;
+  getPasswordReset(token: string): Promise<PasswordReset | undefined>;
+  markPasswordResetAsUsed(id: number): Promise<PasswordReset | undefined>;
 
   // Course operations
   getCourse(id: number): Promise<Course | undefined>;
@@ -101,6 +111,42 @@ export class DatabaseStorage implements IStorage {
       .values(insertUser)
       .returning();
     return user;
+  }
+
+  async getUserByPhone(phoneNumber: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.phoneNumber, phoneNumber));
+    return user || undefined;
+  }
+
+  async updateUserPassword(id: number, newPassword: string): Promise<User | undefined> {
+    const [user] = await db
+      .update(users)
+      .set({ password: newPassword })
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
+  }
+
+  async createPasswordReset(reset: InsertPasswordReset): Promise<PasswordReset> {
+    const [passwordReset] = await db
+      .insert(passwordResets)
+      .values(reset)
+      .returning();
+    return passwordReset;
+  }
+
+  async getPasswordReset(token: string): Promise<PasswordReset | undefined> {
+    const [reset] = await db.select().from(passwordResets).where(eq(passwordResets.token, token));
+    return reset || undefined;
+  }
+
+  async markPasswordResetAsUsed(id: number): Promise<PasswordReset | undefined> {
+    const [reset] = await db
+      .update(passwordResets)
+      .set({ used: true })
+      .where(eq(passwordResets.id, id))
+      .returning();
+    return reset || undefined;
   }
 
   async getCourse(id: number): Promise<Course | undefined> {

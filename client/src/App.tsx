@@ -13,6 +13,8 @@ import Assignments from "@/pages/assignments";
 import AIAssistant from "@/pages/ai-assistant";
 import Notifications from "@/pages/notifications";
 import AuthPage from "@/pages/auth-page";
+import PasswordRecovery from "@/pages/password-recovery";
+import PasswordViewer from "@/pages/password-viewer";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -27,6 +29,8 @@ function Router() {
       <ProtectedRoute path="/ai-assistant" component={AIAssistant} />
       <Route path="/notifications" component={Notifications} />
       <Route path="/auth" component={AuthPage} />
+      <Route path="/password-recovery" component={PasswordRecovery} />
+      <ProtectedRoute path="/password-viewer" component={PasswordViewer} />
       <Route component={NotFound} />
     </Switch>
   );

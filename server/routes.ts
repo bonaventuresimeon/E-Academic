@@ -1,10 +1,21 @@
 import express, { type Request, Response, Router } from "express";
 import { z } from "zod";
-import { insertUserSchema, insertCourseSchema, insertEnrollmentSchema, insertAssignmentSchema, insertSubmissionSchema, type User } from "@shared/schema";
+import { insertUserSchema, insertCourseSchema, insertEnrollmentSchema, insertAssignmentSchema, insertSubmissionSchema, users as usersTable, type User } from "@shared/schema";
+import { db } from "./database";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
 import { upload, handleFileUpload } from "./services/fileUpload";
 import { generateCourseRecommendations, generateSyllabus } from "./services/ai";
+import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import { promisify } from "util";
+
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string) {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
 
 // Enhanced type guard for authenticated requests
 interface AuthenticatedRequest extends Request {
@@ -87,6 +98,105 @@ export function registerRoutes(app: express.Express) {
       res.json(req.user);
     } else {
       res.status(401).json({ message: "Not authenticated" });
+    }
+  });
+
+  // Password recovery routes
+  app.post("/api/password-recovery/request", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { identifier } = req.body; // email or phone number
+      
+      if (!identifier) {
+        res.status(400).json({ message: "Email or phone number required" });
+        return;
+      }
+
+      // Find user by email or phone
+      let user = await storage.getUserByEmail(identifier);
+      if (!user) {
+        user = await storage.getUserByPhone(identifier);
+      }
+
+      if (!user) {
+        // Don't reveal if user exists for security
+        res.json({ message: "If an account exists with this identifier, a reset link has been sent." });
+        return;
+      }
+
+      // Generate reset token
+      const resetToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date(Date.now() + 3600000); // 1 hour from now
+
+      await storage.createPasswordReset({
+        userId: user.id,
+        token: resetToken,
+        expiresAt,
+        used: false
+      });
+
+      // In a real app, you'd send email/SMS here
+      // For now, we'll just return the token for development
+      res.json({ 
+        message: "Reset token generated successfully",
+        resetToken, // Remove this in production
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email
+        }
+      });
+    } catch (error) {
+      console.error("Password recovery request error:", error);
+      res.status(500).json({ message: "Failed to process password recovery request" });
+    }
+  });
+
+  app.post("/api/password-recovery/reset", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token, newPassword } = req.body;
+      
+      if (!token || !newPassword) {
+        res.status(400).json({ message: "Token and new password required" });
+        return;
+      }
+
+      // Validate reset token
+      const resetRecord = await storage.getPasswordReset(token);
+      if (!resetRecord || resetRecord.used || new Date() > resetRecord.expiresAt) {
+        res.status(400).json({ message: "Invalid or expired reset token" });
+        return;
+      }
+
+      // Hash new password
+      const hashedPassword = await hashPassword(newPassword);
+
+      // Update user password
+      await storage.updateUserPassword(resetRecord.userId, hashedPassword);
+      
+      // Mark reset token as used
+      await storage.markPasswordResetAsUsed(resetRecord.id);
+
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Password reset error:", error);
+      res.status(500).json({ message: "Failed to reset password" });
+    }
+  });
+
+  app.get("/api/password-recovery/verify/:token", async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { token } = req.params;
+      
+      const resetRecord = await storage.getPasswordReset(token);
+      if (!resetRecord || resetRecord.used || new Date() > resetRecord.expiresAt) {
+        res.status(400).json({ message: "Invalid or expired reset token" });
+        return;
+      }
+
+      res.json({ message: "Token is valid", userId: resetRecord.userId });
+    } catch (error) {
+      console.error("Token verification error:", error);
+      res.status(500).json({ message: "Failed to verify token" });
     }
   });
 
@@ -335,6 +445,20 @@ export function registerRoutes(app: express.Express) {
       res.json({ ...userStats, ...courseStats });
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch stats" });
+    }
+  });
+
+  app.get("/api/admin/users", requireAuth, requireRole(['admin']), async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      const usersList = await db.select().from(usersTable);
+      res.json(usersList);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch users" });
     }
   });
 

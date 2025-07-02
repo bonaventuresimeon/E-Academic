@@ -71,15 +71,11 @@
 
 @layer base {
   * {
-    border-color: hsl(var(--border));
+    @apply border-border;
   }
 
   body {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
+    @apply bg-background text-foreground;
   }
 }
 
@@ -98,8 +94,7 @@
 
 /* Enhanced focus states for accessibility */
 .focus-enhanced:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px hsl(var(--primary)), 0 0 0 4px hsl(var(--primary) / 0.2);
+  @apply ring-2 ring-primary ring-offset-2 outline-none;
 }
 
 /* Custom scrollbar for better UX */
@@ -108,17 +103,11 @@
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: hsl(220 14.3% 95.9%);
-  border-radius: 9999px;
+  @apply bg-gray-100 rounded-full;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: hsl(220 8.9% 46.1%);
-  border-radius: 9999px;
-}
-
-.custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: hsl(220 8.9% 36.1%);
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
 }
 
 /* Animation classes */
@@ -154,37 +143,25 @@
 
 /* Status indicator styles */
 .status-approved {
-  background: hsl(142.1 76.2% 36.3% / 0.1);
-  color: hsl(142.1 70.6% 45.3%);
-  border-color: hsl(142.1 76.2% 36.3% / 0.2);
+  @apply bg-green-100 text-green-800 border-green-200;
 }
 
 .status-pending {
-  background: hsl(47.9 95.8% 53.1% / 0.1);
-  color: hsl(32.6 95.6% 44%);
-  border-color: hsl(47.9 95.8% 53.1% / 0.2);
+  @apply bg-yellow-100 text-yellow-800 border-yellow-200;
 }
 
 .status-rejected {
-  background: hsl(0 84.2% 60.2% / 0.1);
-  color: hsl(0 72.2% 50.6%);
-  border-color: hsl(0 84.2% 60.2% / 0.2);
+  @apply bg-red-100 text-red-800 border-red-200;
 }
 
 .status-overdue {
-  background: hsl(0 84.2% 60.2% / 0.1);
-  color: hsl(0 72.2% 50.6%);
-  border-color: hsl(0 84.2% 60.2% / 0.2);
+  @apply bg-red-100 text-red-800 border-red-200;
 }
 
 .status-submitted {
-  background: hsl(221.2 83.2% 53.3% / 0.1);
-  color: hsl(221.2 83.2% 53.3%);
-  border-color: hsl(221.2 83.2% 53.3% / 0.2);
+  @apply bg-blue-100 text-blue-800 border-blue-200;
 }
 
 .status-graded {
-  background: hsl(142.1 76.2% 36.3% / 0.1);
-  color: hsl(142.1 70.6% 45.3%);
-  border-color: hsl(142.1 76.2% 36.3% / 0.2);
+  @apply bg-green-100 text-green-800 border-green-200;
 }

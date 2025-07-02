@@ -2,7 +2,7 @@ import OpenAI from "openai";
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ 
-  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || "sk-test-key"
+  apiKey: process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY_ENV_VAR || ""
 });
 
 export async function generateCourseRecommendations(
@@ -20,6 +20,10 @@ export async function generateCourseRecommendations(
   }>;
 }> {
   try {
+    // Check if API key is available
+    if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY_ENV_VAR) {
+      throw new Error("OpenAI API key not configured");
+    }
     const prompt = `Based on the following academic interests and preferences, recommend 3-5 relevant university courses:
 
 Academic Interests: ${interests}
@@ -116,6 +120,11 @@ export async function generateSyllabus(
   };
 }> {
   try {
+    // Check if API key is available
+    if (!process.env.OPENAI_API_KEY && !process.env.OPENAI_API_KEY_ENV_VAR) {
+      throw new Error("OpenAI API key not configured");
+    }
+
     const prompt = `Create a comprehensive university course syllabus for:
 
 Course Title: ${courseTitle}

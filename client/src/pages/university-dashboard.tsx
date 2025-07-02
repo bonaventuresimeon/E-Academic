@@ -73,7 +73,8 @@ import {
   RefreshCw,
   Wifi,
   WifiOff,
-  HelpCircle
+  HelpCircle,
+  X
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -142,6 +143,7 @@ const UniversityDashboard = () => {
   const [activeTab, setActiveTab] = useState('overview');
   const [darkMode, setDarkMode] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
   const [isOnline, setIsOnline] = useState(true);
 
   // Monitor online status
@@ -392,36 +394,36 @@ const UniversityDashboard = () => {
           ? "bg-slate-900/95 border-slate-800" 
           : "bg-white/95 border-gray-200"
       )}>
-        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
-          {/* Logo and University Name */}
-          <div className="flex items-center space-x-2 md:space-x-4">
+        <div className="flex items-center justify-between h-16 px-3 md:px-6">
+          {/* Left Side - Menu Button and Logo */}
+          <div className="flex items-center space-x-2 flex-1 min-w-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className={cn(
-                "lg:hidden p-2",
+                "lg:hidden p-2 shrink-0",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
               <Menu className="w-5 h-5" />
             </Button>
             
-            <div className="flex items-center space-x-2 md:space-x-3">
+            <div className="flex items-center space-x-2 min-w-0">
               <div className={cn(
-                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg"
+                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
               )}>
-                <GraduationCap className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                <GraduationCap className="w-4 h-4 md:w-6 md:h-6 text-white" />
               </div>
-              <div className="hidden sm:block">
+              <div className="hidden md:block min-w-0">
                 <h1 className={cn(
-                  "text-lg md:text-xl font-bold",
+                  "text-sm lg:text-xl font-bold truncate",
                   darkMode ? "text-white" : "text-gray-900"
                 )}>
                   University Portal
                 </h1>
                 <p className={cn(
-                  "text-xs md:text-sm",
+                  "text-xs lg:text-sm truncate",
                   darkMode ? "text-slate-400" : "text-gray-600"
                 )}>
                   Academic Management System
@@ -450,22 +452,14 @@ const UniversityDashboard = () => {
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center space-x-1 md:space-x-3">
-            {/* Connection Status - Hidden on mobile */}
-            <div className="hidden md:flex items-center space-x-2">
-              {isOnline ? (
-                <Wifi className="w-4 h-4 text-green-500" />
-              ) : (
-                <WifiOff className="w-4 h-4 text-red-500" />
-              )}
-            </div>
-
-            {/* Mobile Search - Hidden on large screens */}
+          <div className="flex items-center space-x-1">
+            {/* Mobile Search Button - Hidden on large screens */}
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => setShowMobileSearch(true)}
               className={cn(
-                "p-2 lg:hidden",
+                "p-2 lg:hidden shrink-0",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
@@ -478,7 +472,7 @@ const UniversityDashboard = () => {
               size="sm"
               onClick={() => setDarkMode(!darkMode)}
               className={cn(
-                "p-2",
+                "p-2 shrink-0",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
@@ -490,24 +484,12 @@ const UniversityDashboard = () => {
               variant="ghost"
               size="sm"
               className={cn(
-                "relative p-2",
+                "relative p-2 shrink-0",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-            </Button>
-
-            {/* Help - Hidden on mobile */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "hidden md:flex p-2",
-                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <HelpCircle className="w-4 h-4" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </Button>
 
             {/* User Profile */}
@@ -515,30 +497,30 @@ const UniversityDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center space-x-1 md:space-x-2 p-2"
+                className="flex items-center space-x-2 p-2 min-w-0"
               >
-                <Avatar className="w-7 h-7 md:w-8 md:h-8">
+                <Avatar className="w-8 h-8 shrink-0">
                   <AvatarImage src="" />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-xs md:text-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm">
                     {user?.firstName?.[0] || user?.username?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden md:block text-left">
+                <div className="hidden lg:block text-left min-w-0">
                   <p className={cn(
-                    "text-sm font-medium",
+                    "text-sm font-medium truncate",
                     darkMode ? "text-white" : "text-gray-900"
                   )}>
                     {user?.firstName || user?.username}
                   </p>
                   <p className={cn(
-                    "text-xs capitalize",
+                    "text-xs capitalize truncate",
                     darkMode ? "text-slate-400" : "text-gray-500"
                   )}>
                     {user?.role}
                   </p>
                 </div>
                 <ChevronDown className={cn(
-                  "w-3 h-3 md:w-4 md:h-4 transition-transform duration-200 hidden sm:block",
+                  "w-4 h-4 transition-transform duration-200 hidden lg:block shrink-0",
                   showProfile && "rotate-180",
                   darkMode ? "text-slate-400" : "text-gray-400"
                 )} />
@@ -626,7 +608,7 @@ const UniversityDashboard = () => {
 
         {/* University Sidebar */}
         <aside className={cn(
-          "fixed left-0 top-[73px] h-[calc(100vh-73px)] transition-all duration-300 z-40 border-r",
+          "fixed left-0 top-16 h-[calc(100vh-64px)] transition-all duration-300 z-40 border-r",
           // Mobile: hidden by default, show when not collapsed
           // Desktop: always visible, width changes based on collapsed state
           sidebarCollapsed 
@@ -739,7 +721,7 @@ const UniversityDashboard = () => {
 
         {/* Main Content */}
         <main className={cn(
-          "flex-1 transition-all duration-300",
+          "flex-1 transition-all duration-300 pt-16",
           // Mobile: no margin (sidebar overlays)
           // Desktop: margin based on sidebar state
           sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
@@ -1057,6 +1039,46 @@ const UniversityDashboard = () => {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Search Modal */}
+      {showMobileSearch && (
+        <div className="fixed inset-0 bg-black/50 z-50 lg:hidden">
+          <div className={cn(
+            "fixed top-0 left-0 right-0 p-4 border-b",
+            darkMode ? "bg-slate-900 border-slate-800" : "bg-white border-gray-200"
+          )}>
+            <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowMobileSearch(false)}
+                className={cn(
+                  "p-2",
+                  darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                )}
+              >
+                <X className="w-5 h-5" />
+              </Button>
+              <div className="relative flex-1">
+                <Search className={cn(
+                  "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
+                  darkMode ? "text-slate-400" : "text-gray-400"
+                )} />
+                <Input
+                  placeholder="Search courses, assignments, students..."
+                  className={cn(
+                    "pl-10 border-0 shadow-sm h-12",
+                    darkMode 
+                      ? "bg-slate-800 text-white placeholder-slate-400 focus:bg-slate-700" 
+                      : "bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white"
+                  )}
+                  autoFocus
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

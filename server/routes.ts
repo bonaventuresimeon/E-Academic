@@ -114,11 +114,12 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
     }
   });
 
-  app.get("/api/courses/:id", async (req, res): Promise<void> => {
+  app.get("/api/courses/:id", async (req, res) => {
     try {
       const course = await storage.getCourse(parseInt(req.params.id));
       if (!course) {
-        return res.status(404).json({ message: "Course not found" });
+        res.status(404).json({ message: "Course not found" });
+        return;
       }
       res.json(course);
     } catch (error) {
@@ -126,7 +127,7 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
     }
   });
 
-  app.post("/api/courses", requireAuth, requireRole(['lecturer', 'admin']), async (req, res): Promise<void> => {
+  app.post("/api/courses", requireAuth, requireRole(['lecturer', 'admin']), async (req, res) => {
     try {
       const courseData = insertCourseSchema.parse(req.body);
       const course = await storage.createCourse(courseData);
@@ -141,7 +142,8 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
       const courseData = insertCourseSchema.partial().parse(req.body);
       const course = await storage.updateCourse(parseInt(req.params.id), courseData);
       if (!course) {
-        return res.status(404).json({ message: "Course not found" });
+        res.status(404).json({ message: "Course not found" });
+        return;
       }
       res.json(course);
     } catch (error) {
@@ -161,7 +163,8 @@ academic_crm_version_info{version="${process.env.npm_package_version || "1.0.0"}
       // Check if already enrolled
       const existing = await storage.getEnrollment(enrollmentData.courseId, req.user.id);
       if (existing) {
-        return res.status(400).json({ message: "Already enrolled in this course" });
+        res.status(400).json({ message: "Already enrolled in this course" });
+        return;
       }
       
       const enrollment = await storage.createEnrollment(enrollmentData);

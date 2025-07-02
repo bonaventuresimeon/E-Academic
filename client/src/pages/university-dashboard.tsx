@@ -398,172 +398,242 @@ const UniversityDashboard = () => {
           ? "bg-slate-900/95 border-slate-800" 
           : "bg-white/95 border-gray-200"
       )}>
-        <div className="flex items-center justify-between h-16 px-4 lg:px-6">
-          {/* Left Side - Menu Button and Logo */}
-          <div className="flex items-center space-x-3">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className={cn(
-                "lg:hidden p-2 shrink-0",
-                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <Menu className="w-5 h-5" />
-            </Button>
-            
+        <div className="flex items-center h-16 px-4 lg:px-6">
+          {/* Mobile Layout */}
+          <div className="flex lg:hidden items-center justify-between w-full">
+            {/* Left - Menu Button and Logo */}
             <div className="flex items-center space-x-3">
-              <div className={cn(
-                "w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
-              )}>
-                <GraduationCap className="w-6 h-6 text-white" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className={cn(
-                  "text-lg font-bold",
-                  darkMode ? "text-white" : "text-gray-900"
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className={cn(
+                  "p-2 shrink-0",
+                  darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                )}
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              
+              <div className="flex items-center space-x-2">
+                <div className={cn(
+                  "w-8 h-8 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
                 )}>
-                  Academic-CRM
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Side - Search and Profile */}
-          <div className="flex items-center space-x-3">
-            {/* Desktop Search Bar */}
-            <div className="hidden lg:block w-80">
-              <div className="relative">
-                <Search className={cn(
-                  "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
-                  darkMode ? "text-slate-400" : "text-gray-400"
-                )} />
-                <Input
-                  placeholder="Search courses, assignments, students..."
-                  className={cn(
-                    "pl-10 border-0 shadow-sm",
-                    darkMode 
-                      ? "bg-slate-800 text-white placeholder-slate-400 focus:bg-slate-700" 
-                      : "bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white"
-                  )}
-                />
+                  <GraduationCap className="w-5 h-5 text-white" />
+                </div>
+                <div className="hidden sm:block">
+                  <h1 className={cn(
+                    "text-base font-bold",
+                    darkMode ? "text-white" : "text-gray-900"
+                  )}>
+                    Academic-CRM
+                  </h1>
+                </div>
               </div>
             </div>
 
-            {/* Mobile Search Button */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowMobileSearch(true)}
-              className={cn(
-                "p-2 lg:hidden shrink-0",
-                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <Search className="w-5 h-5" />
-            </Button>
+            {/* Center - Mobile Search */}
+            <div className="flex-1 mx-4">
+              <Button
+                variant="ghost"
+                onClick={() => setShowMobileSearch(true)}
+                className={cn(
+                  "w-full h-10 px-4 justify-start border",
+                  darkMode 
+                    ? "bg-slate-800/50 hover:bg-slate-800 border-slate-700 text-slate-400" 
+                    : "bg-gray-100/50 hover:bg-gray-100 border-gray-200 text-gray-500"
+                )}
+              >
+                <Search className="w-4 h-4 mr-2" />
+                <span className="text-sm">Search...</span>
+              </Button>
+            </div>
 
-            {/* User Profile */}
+            {/* Right - User Profile */}
             <div className="relative">
               <Button
                 variant="ghost"
                 onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center space-x-2 p-2 min-w-0"
+                className="p-1 rounded-full"
               >
-                <Avatar className="w-8 h-8 shrink-0">
+                <Avatar className="w-8 h-8 ring-2 ring-blue-500/20">
                   <AvatarImage src="" />
                   <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm">
                     {user?.firstName?.[0] || user?.username?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden lg:block text-left min-w-0">
-                  <p className={cn(
-                    "text-sm font-medium truncate",
+              </Button>
+            </div>
+          </div>
+
+          {/* Desktop Layout */}
+          <div className="hidden lg:flex items-center justify-between w-full">
+            {/* Left Side - Logo */}
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3">
+                <div className={cn(
+                  "w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
+                )}>
+                  <GraduationCap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h1 className={cn(
+                    "text-lg font-bold",
                     darkMode ? "text-white" : "text-gray-900"
                   )}>
-                    {user?.firstName || user?.username}
-                  </p>
-                  <p className={cn(
-                    "text-xs capitalize truncate",
-                    darkMode ? "text-slate-400" : "text-gray-500"
-                  )}>
-                    {user?.role}
-                  </p>
+                    Academic-CRM
+                  </h1>
                 </div>
-                <ChevronDown className={cn(
-                  "w-4 h-4 transition-transform duration-200 hidden lg:block shrink-0",
-                  showProfile && "rotate-180",
-                  darkMode ? "text-slate-400" : "text-gray-400"
-                )} />
-              </Button>
+              </div>
+            </div>
 
-              {/* Simplified Profile Dropdown */}
-              {showProfile && (
-                <div className={cn(
-                  "absolute right-0 top-full mt-2 w-56 rounded-lg shadow-lg border z-50",
-                  darkMode 
-                    ? "bg-slate-900 border-slate-800" 
-                    : "bg-white border-gray-200"
-                )}>
-                  <div className="p-4 border-b border-slate-700">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
-                          {user?.firstName?.[0] || user?.username?.[0] || 'U'}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className={cn(
-                          "font-medium",
-                          darkMode ? "text-white" : "text-gray-900"
-                        )}>
-                          {user?.firstName || user?.username}
-                        </p>
-                        <p className={cn(
-                          "text-sm",
-                          darkMode ? "text-slate-400" : "text-gray-600"
-                        )}>
-                          {user?.email}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div className="p-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "w-full justify-start text-sm",
-                        darkMode ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-                      )}
-                      onClick={() => setActiveTab('profile')}
-                    >
-                      <UserIcon className="w-4 h-4 mr-2" />
-                      Profile
-                    </Button>
-                    <Separator className={cn(
-                      "my-2",
-                      darkMode ? "bg-slate-700" : "bg-gray-200"
-                    )} />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className={cn(
-                        "w-full justify-start text-sm text-red-500 hover:text-red-400 hover:bg-red-500/10"
-                      )}
-                      onClick={handleLogout}
-                    >
-                      <LogOut className="w-4 h-4 mr-2" />
-                      Sign Out
-                    </Button>
-                  </div>
+            {/* Right Side - Search and Profile */}
+            <div className="flex items-center space-x-3">
+              {/* Desktop Search Bar */}
+              <div className="w-80">
+                <div className="relative">
+                  <Search className={cn(
+                    "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
+                    darkMode ? "text-slate-400" : "text-gray-400"
+                  )} />
+                  <Input
+                    placeholder="Search courses, assignments, students..."
+                    className={cn(
+                      "pl-10 border-0 shadow-sm",
+                      darkMode 
+                        ? "bg-slate-800 text-white placeholder-slate-400 focus:bg-slate-700" 
+                        : "bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white"
+                    )}
+                  />
                 </div>
-              )}
+              </div>
+
+              {/* Desktop User Profile */}
+              <div className="relative">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowProfile(!showProfile)}
+                  className="flex items-center space-x-2 p-2 min-w-0"
+                >
+                  <Avatar className="w-8 h-8 shrink-0 ring-2 ring-blue-500/20">
+                    <AvatarImage src="" />
+                    <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm">
+                      {user?.firstName?.[0] || user?.username?.[0] || 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="text-left min-w-0">
+                    <p className={cn(
+                      "text-sm font-medium truncate",
+                      darkMode ? "text-white" : "text-gray-900"
+                    )}>
+                      {user?.firstName || user?.username}
+                    </p>
+                    <p className={cn(
+                      "text-xs capitalize truncate",
+                      darkMode ? "text-slate-400" : "text-gray-500"
+                    )}>
+                      {user?.role}
+                    </p>
+                  </div>
+                  <ChevronDown className={cn(
+                    "w-4 h-4 transition-transform duration-200 shrink-0",
+                    showProfile && "rotate-180",
+                    darkMode ? "text-slate-400" : "text-gray-400"
+                  )} />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
+
+        {/* Circular Profile Panel - Appears within webpage */}
+        {showProfile && (
+          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <div 
+              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+              onClick={() => setShowProfile(false)}
+            />
+            
+            {/* Circular Profile Panel */}
+            <div className={cn(
+              "relative w-80 h-80 rounded-full shadow-2xl border-4 overflow-hidden",
+              "transform transition-all duration-300 scale-100",
+              darkMode 
+                ? "bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 border-slate-600" 
+                : "bg-gradient-to-br from-white via-gray-50 to-white border-gray-300"
+            )}>
+              {/* Close Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowProfile(false)}
+                className={cn(
+                  "absolute top-4 right-4 w-8 h-8 p-0 rounded-full z-10",
+                  darkMode ? "text-slate-400 hover:text-white hover:bg-slate-700" : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                )}
+              >
+                <X className="w-4 h-4" />
+              </Button>
+
+              {/* Profile Content */}
+              <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+                {/* Avatar */}
+                <Avatar className="w-20 h-20 mb-4 ring-4 ring-blue-500/30">
+                  <AvatarImage src="" />
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-2xl">
+                    {user?.firstName?.[0] || user?.username?.[0] || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+
+                {/* User Info */}
+                <h3 className={cn(
+                  "text-xl font-bold mb-1",
+                  darkMode ? "text-white" : "text-gray-900"
+                )}>
+                  {user?.firstName || user?.username}
+                </h3>
+                <p className={cn(
+                  "text-sm mb-2",
+                  darkMode ? "text-slate-400" : "text-gray-600"
+                )}>
+                  {user?.email}
+                </p>
+                <Badge variant="outline" className="mb-6 capitalize">
+                  {user?.role}
+                </Badge>
+
+                {/* Action Buttons */}
+                <div className="space-y-3 w-full">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      setActiveTab('profile');
+                      setShowProfile(false);
+                    }}
+                  >
+                    <UserIcon className="w-4 h-4 mr-2" />
+                    View Profile
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    className="w-full"
+                    onClick={() => {
+                      handleLogout();
+                      setShowProfile(false);
+                    }}
+                  >
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </header>
 
       <div className="flex">

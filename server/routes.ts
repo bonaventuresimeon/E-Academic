@@ -26,7 +26,7 @@ function isAuthenticated(req: Request): req is AuthenticatedRequest {
 }
 
 function requireAuth(req: Request, res: Response, next: any): void {
-  if (req.isAuthenticated && req.isAuthenticated()) {
+  if (req.isAuthenticated()) {
     return next();
   }
   res.status(401).json({ message: "Authentication required" });
@@ -41,6 +41,8 @@ function requireRole(roles: string[]) {
     next();
   };
 }
+
+// Type casting helper for Prisma compatibility
 
 const recommendationSchema = z.object({
   interests: z.string().min(1, "Interests are required"),
@@ -66,39 +68,7 @@ export function registerRoutes(app: express.Express) {
     });
   });
 
-  // Authentication routes
-  app.post("/api/register", async (req: Request, res: Response): Promise<void> => {
-    try {
-      const userData = insertUserSchema.parse(req.body);
-      const user = await storage.createUser(userData);
-      res.status(201).json(user);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid user data" });
-    }
-  });
-
-  app.post("/api/login", async (req: Request, res: Response): Promise<void> => {
-    // Passport handles the actual authentication
-    res.json({ message: "Login handled by passport middleware" });
-  });
-
-  app.post("/api/logout", (req: Request, res: Response): void => {
-    req.logout((err) => {
-      if (err) {
-        res.status(500).json({ message: "Logout failed" });
-        return;
-      }
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-
-  app.get("/api/user", (req: Request, res: Response): void => {
-    if (isAuthenticated(req)) {
-      res.json(req.user);
-    } else {
-      res.status(401).json({ message: "Not authenticated" });
-    }
-  });
+  // Authentication routes are handled in auth.ts
 
   // Password recovery routes
   app.post("/api/password-recovery/request", async (req: Request, res: Response): Promise<void> => {
@@ -228,7 +198,7 @@ export function registerRoutes(app: express.Express) {
   app.post("/api/courses", requireAuth, requireRole(['lecturer', 'admin']), async (req: Request, res: Response): Promise<void> => {
     try {
       const courseData = insertCourseSchema.parse(req.body);
-      const course = await storage.createCourse(courseData);
+      const course = await storage.createCourse(courseData as any);
       res.status(201).json(course);
     } catch (error) {
       res.status(400).json({ message: "Invalid course data" });
@@ -325,7 +295,7 @@ export function registerRoutes(app: express.Express) {
         courseId: parseInt(req.params.id),
         instructorId: req.user.id
       });
-      const assignment = await storage.createAssignment(assignmentData);
+      const assignment = await storage.createAssignment(assignmentData as any);
       res.status(201).json(assignment);
     } catch (error) {
       res.status(400).json({ message: "Invalid assignment data" });
@@ -355,7 +325,7 @@ export function registerRoutes(app: express.Express) {
         content: req.body.content,
         filePath: req.file?.path
       });
-      const submission = await storage.createSubmission(submissionData);
+      const submission = await storage.createSubmission(submissionData as any);
       res.status(201).json(submission);
     } catch (error) {
       res.status(400).json({ message: "Invalid submission data" });

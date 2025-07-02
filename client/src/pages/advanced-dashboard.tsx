@@ -474,7 +474,14 @@ export default function AdvancedDashboard() {
         sidebarCollapsed ? "lg:ml-20" : "lg:ml-80"
       )}>
         {/* Top Navigation */}
-        <header className="sticky top-0 z-30 backdrop-blur-xl border-b transition-colors duration-300 bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-700">
+        <header className={cn(
+          "sticky top-0 z-30 border-b transition-colors duration-300 border-slate-200 dark:border-slate-700",
+          // Mobile: solid gradient backgrounds (no transparency)
+          "bg-gradient-to-r from-white via-gray-50 to-white",
+          "dark:bg-gradient-to-r dark:from-slate-900 dark:via-slate-800 dark:to-slate-900",
+          // Desktop: transparent blur backgrounds
+          "lg:backdrop-blur-xl lg:bg-white/90 lg:dark:bg-slate-900/90"
+        )}>
           <div className="flex items-center justify-between h-16 px-6">
             {/* Mobile Logo & Menu */}
             <div className="flex items-center space-x-4">

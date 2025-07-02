@@ -132,7 +132,13 @@ const UniversityDashboard = () => {
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    // Start collapsed on mobile, expanded on desktop
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 1024; // lg breakpoint
+    }
+    return true;
+  });
   const [activeTab, setActiveTab] = useState('overview');
   const [darkMode, setDarkMode] = useState(true);
   const [showProfile, setShowProfile] = useState(false);
@@ -150,6 +156,19 @@ const UniversityDashboard = () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
     };
+  }, []);
+
+  // Handle screen resize for responsive sidebar
+  useEffect(() => {
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 1024; // lg breakpoint
+      if (isMobile) {
+        setSidebarCollapsed(true);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   // Fetch dashboard statistics
@@ -608,7 +627,11 @@ const UniversityDashboard = () => {
         {/* University Sidebar */}
         <aside className={cn(
           "fixed left-0 top-[73px] h-[calc(100vh-73px)] transition-all duration-300 z-40 border-r",
-          sidebarCollapsed ? "w-16 -translate-x-full lg:translate-x-0" : "w-64 translate-x-0",
+          // Mobile: hidden by default, show when not collapsed
+          // Desktop: always visible, width changes based on collapsed state
+          sidebarCollapsed 
+            ? "-translate-x-full lg:translate-x-0 lg:w-16" 
+            : "translate-x-0 w-64",
           darkMode 
             ? "bg-slate-900 border-slate-800" 
             : "bg-white border-gray-200"
@@ -650,9 +673,15 @@ const UniversityDashboard = () => {
                     <Button
                       key={item.id}
                       variant="ghost"
-                      onClick={() => setActiveTab(item.id)}
+                      onClick={() => {
+                        setActiveTab(item.id);
+                        // Auto-collapse sidebar on mobile after selection
+                        if (window.innerWidth < 1024) {
+                          setSidebarCollapsed(true);
+                        }
+                      }}
                       className={cn(
-                        "w-full justify-start h-10 transition-all duration-200",
+                        "w-full justify-start h-12 transition-all duration-200 touch-manipulation",
                         isActive 
                           ? darkMode
                             ? "bg-blue-600 text-white shadow-lg"
@@ -711,7 +740,8 @@ const UniversityDashboard = () => {
         {/* Main Content */}
         <main className={cn(
           "flex-1 transition-all duration-300",
-          "lg:ml-16 xl:ml-64",
+          // Mobile: no margin (sidebar overlays)
+          // Desktop: margin based on sidebar state
           sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
         )}>
           <div className="p-4 md:p-6 space-y-4 md:space-y-6">
@@ -983,7 +1013,8 @@ const UniversityDashboard = () => {
       {/* University Footer */}
       <footer className={cn(
         "border-t mt-8 transition-colors duration-300",
-        "lg:ml-16 xl:ml-64",
+        // Mobile: no margin (sidebar overlays)
+        // Desktop: margin based on sidebar state
         sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
         darkMode 
           ? "bg-slate-900 border-slate-800" 

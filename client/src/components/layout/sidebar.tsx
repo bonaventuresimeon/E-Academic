@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { cn } from "@/lib/utils";
@@ -5,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
   BookOpen,
   FileText,
@@ -18,15 +22,69 @@ import {
   GraduationCap,
   PlusCircle,
   Search,
+  ChevronDown,
+  ChevronRight,
+  Home,
+  MessageSquare,
+  Bell,
+  Database,
+  Zap,
+  Target,
+  TrendingUp,
+  Shield,
+  HelpCircle,
+  Star,
+  Bookmark,
+  Archive,
+  Layers,
+  Grid,
+  Activity,
+  Globe,
+  Cpu,
+  Sparkles,
+  Palette,
+  Command
 } from "lucide-react";
 
 interface SidebarProps {
   className?: string;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
-export default function Sidebar({ className }: SidebarProps) {
+interface NavItem {
+  title: string;
+  icon: any;
+  href: string;
+  badge?: string | number;
+  children?: NavItem[];
+  category?: string;
+  isNew?: boolean;
+  isPro?: boolean;
+}
+
+interface QuickStat {
+  label: string;
+  value: string | number;
+  change?: number;
+  icon: any;
+  color: string;
+}
+
+export default function Sidebar({ className, collapsed = false, onToggleCollapse }: SidebarProps) {
   const { user } = useAuth();
   const [location, setLocation] = useLocation();
+  const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set(['main']));
+
+  const toggleSection = (section: string) => {
+    const newExpanded = new Set(expandedSections);
+    if (newExpanded.has(section)) {
+      newExpanded.delete(section);
+    } else {
+      newExpanded.add(section);
+    }
+    setExpandedSections(newExpanded);
+  };
 
   const getNavigationItems = () => {
     const baseItems = [

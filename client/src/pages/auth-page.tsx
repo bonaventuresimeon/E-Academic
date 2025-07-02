@@ -104,7 +104,12 @@ export default function AuthPage() {
   };
 
   const onRegister = (data: RegisterFormData) => {
-    registerMutation.mutate(data);
+    // Ensure phoneNumber is properly typed for Prisma
+    const userData = {
+      ...data,
+      phoneNumber: data.phoneNumber || null,
+    };
+    registerMutation.mutate(userData as any);
   };
 
   const onPasswordRecovery = (data: PasswordRecoveryFormData) => {

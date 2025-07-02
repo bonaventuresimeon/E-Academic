@@ -156,12 +156,13 @@ export const insertSubmissionSchema = createInsertSchema(submissions).omit({
 
 // Types
 export type User = typeof users.$inferSelect;
-export type InsertUser = z.infer<typeof insertUserSchema>;
+export type SelectUser = User; // Alias for compatibility
+export type InsertUser = typeof users.$inferInsert;
 export type Course = typeof courses.$inferSelect;
-export type InsertCourse = z.infer<typeof insertCourseSchema>;
+export type InsertCourse = typeof courses.$inferInsert;
 export type Enrollment = typeof enrollments.$inferSelect;
-export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
+export type InsertEnrollment = typeof enrollments.$inferInsert;
 export type Assignment = typeof assignments.$inferSelect;
-export type InsertAssignment = z.infer<typeof insertAssignmentSchema>;
+export type InsertAssignment = typeof assignments.$inferInsert;
 export type Submission = typeof submissions.$inferSelect;
-export type InsertSubmission = z.infer<typeof insertSubmissionSchema>;
+export type InsertSubmission = typeof submissions.$inferInsert;

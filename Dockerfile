@@ -1,44 +1,40 @@
-# Multi-stage build for production deployment
-FROM node:20-alpine AS base
+# Multi-stage build for production
+FROM node:20-alpine AS builder
 
-# Install dependencies only when needed
-FROM base AS deps
-RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Install dependencies based on the preferred package manager
-COPY package.json package-lock.json* ./
-RUN npm ci --legacy-peer-deps
+# Copy package files
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-# Rebuild the source code only when needed
-FROM base AS builder
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+# Copy source code
 COPY . .
 
 # Build the application
 RUN npm run build
 
-# Production image, copy all the files and run the app
-FROM base AS runner
+# Production stage
+FROM node:20-alpine AS production
+
 WORKDIR /app
+
+# Install dumb-init for proper signal handling
+RUN apk add --no-cache dumb-init
+
+# Create app user
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
+
+# Copy built application
+COPY --from=builder --chown=nextjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nextjs:nodejs /app/package*.json ./
+
+USER nextjs
+
+EXPOSE 5000
 
 ENV NODE_ENV=production
 ENV PORT=5000
 
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nodejs
-
-# Copy the built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/client/dist ./client/dist
-COPY --from=builder /app/package.json ./package.json
-
-# Copy node_modules (production dependencies only)
-COPY --from=deps /app/node_modules ./node_modules
-
-USER nodejs
-
-EXPOSE 5000
-
-CMD ["node", "dist/index.js"]
+CMD ["dumb-init", "node", "dist/index.js"]

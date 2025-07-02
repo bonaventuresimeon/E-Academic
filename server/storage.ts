@@ -67,11 +67,11 @@ export interface IStorage {
   getUserStats(): Promise<{ totalUsers: number; activeStudents: number; activeLecturers: number }>;
   getCourseStats(): Promise<{ totalCourses: number; activeCourses: number }>;
 
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: session.Store;
 
   constructor() {
     this.sessionStore = new PostgresSessionStore({ 

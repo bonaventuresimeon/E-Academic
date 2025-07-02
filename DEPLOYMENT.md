@@ -1,466 +1,271 @@
-# 🚀 Production Deployment Guide
+# 🚀 Academic Management Platform - Deployment Guide
 
-Complete deployment guide for the Academic Management Platform across multiple environments and cloud providers.
+## Quick Start
 
-## 📋 Table of Contents
+The platform supports multiple databases and deployment options for maximum flexibility:
 
-- [Prerequisites](#prerequisites)
-- [Environment Setup](#environment-setup)
-- [Local Development](#local-development)
-- [Kubernetes Deployment](#kubernetes-deployment)
-- [Cloud Provider Setup](#cloud-provider-setup)
-- [Monitoring & Observability](#monitoring--observability)
-- [Security Configuration](#security-configuration)
-- [CI/CD Pipeline](#cicd-pipeline)
-- [Troubleshooting](#troubleshooting)
+### 📊 Supported Databases
+- **PostgreSQL** (recommended for production)
+- **MySQL** (alternative for existing MySQL infrastructure)
+- **SQLite** (local development only)
 
-## 🛠️ Prerequisites
-
-### System Requirements
-
-- **Node.js**: 20.x or higher
-- **Docker**: 24.x or higher
-- **Kubernetes**: 1.25+ (kubectl configured)
-- **Terraform**: 1.5+ (for infrastructure)
-- **Helm**: 3.12+ (for package management)
-
-### Required Accounts & Services
-
-- **PostgreSQL Database** (local or cloud)
-- **OpenAI API Key** (optional, has fallbacks)
-- **Container Registry** (Docker Hub, ECR, GCR)
-- **Cloud Provider Account** (AWS, GCP, or Azure)
+### 🌐 Supported Platforms
+- **Render** (easiest deployment)
+- **Fly.io** (global edge deployment)
+- **Vercel** (serverless deployment)
+- **Docker** (containerized deployment)
+- **Local** (development)
 
 ## 🔧 Environment Setup
 
-### 1. Clone and Configure
+1. **Copy environment template:**
+   ```bash
+   cp .env.example .env
+   ```
+
+2. **Configure your database URL:**
+   ```bash
+   # PostgreSQL (recommended)
+   DATABASE_URL=postgresql://username:password@localhost:5432/database_name
+   
+   # MySQL
+   DATABASE_URL=mysql://username:password@localhost:3306/database_name
+   
+   # SQLite (local only)
+   DATABASE_URL=file:./dev.db
+   ```
+
+3. **Set other required variables:**
+   ```bash
+   SESSION_SECRET=your-super-secret-session-key-here
+   OPENAI_API_KEY=your-openai-api-key-here  # optional
+   ```
+
+## 🚀 One-Click Deployment
+
+### Option 1: Render (Recommended)
+
+1. Fork this repository
+2. Connect to Render
+3. Render will automatically detect `render.yaml` and deploy
+4. Database will be automatically provisioned
+
+### Option 2: Quick Deploy Script
 
 ```bash
-# Clone the repository
-git clone https://github.com/bonaventuresimeon/AcademicCRM.git
-cd AcademicCRM
+# Make script executable
+chmod +x scripts/deploy.sh
 
-# Install dependencies with conflict resolution
-./scripts/install-deps.sh
-
-# Copy and configure environment
-cp .env.example .env
-# Edit .env with your configuration
+# Deploy to your platform of choice
+./scripts/deploy.sh render    # Deploy to Render
+./scripts/deploy.sh fly       # Deploy to Fly.io
+./scripts/deploy.sh vercel    # Deploy to Vercel
+./scripts/deploy.sh docker    # Run with Docker
+./scripts/deploy.sh local     # Local development
 ```
 
-### 2. Environment Variables
+## 🗄️ Database Configuration
 
-Create `.env` file with required variables:
+### PostgreSQL Providers
 
-```env
-# Database Configuration
-DATABASE_URL=postgresql://username:password@localhost:5432/academic_crm
-SESSION_SECRET=your-secure-session-secret-min-32-chars
-
-# AI Services (Optional)
-OPENAI_API_KEY=sk-your-openai-api-key
-
-# Application Settings
-NODE_ENV=production
-PORT=5000
-LOG_LEVEL=info
-
-# Security Settings
-SECURE_COOKIES=true
-TRUST_PROXY=true
-CORS_ORIGIN=https://your-domain.com
+**Render PostgreSQL:**
+```bash
+# Automatically provided by Render
+DATABASE_URL=postgres://user:pass@hostname:5432/dbname
 ```
 
-## 💻 Local Development
+**Neon (Serverless):**
+```bash
+DATABASE_URL=postgresql://user:pass@hostname.neon.tech:5432/dbname
+```
+
+**Supabase:**
+```bash
+DATABASE_URL=postgresql://postgres:password@hostname.supabase.co:5432/postgres
+```
+
+**Local PostgreSQL:**
+```bash
+DATABASE_URL=postgresql://postgres:password@localhost:5432/academic_platform
+```
+
+### MySQL Configuration
+
+**PlanetScale:**
+```bash
+DATABASE_URL=mysql://username:password@hostname.psdb.cloud/database_name?sslaccept=strict
+```
+
+**Local MySQL:**
+```bash
+DATABASE_URL=mysql://root:password@localhost:3306/academic_platform
+```
+
+### SQLite (Development Only)
+
+```bash
+DATABASE_URL=file:./dev.db
+```
+
+## 🔒 Environment Variables
+
+### Required Variables
+- `DATABASE_URL` - Database connection string
+- `SESSION_SECRET` - Session encryption key (generate with `openssl rand -base64 32`)
+
+### Optional Variables
+- `OPENAI_API_KEY` - For AI features (course recommendations, syllabus generation)
+- `DATABASE_TYPE` - Override auto-detection (`postgresql`, `mysql`, `sqlite`)
+- `NODE_ENV` - Environment (`development`, `production`)
+- `PORT` - Server port (default: 5000)
+
+## 🐳 Docker Deployment
 
 ### Quick Start
-
 ```bash
-# Start development environment
-npm run dev
-
-# In separate terminal, push database schema
-npm run db:push
-
-# Access application
-open http://localhost:5000
+docker-compose up -d
 ```
 
-### Docker Development
-
+### Custom Database
 ```bash
-# Build and run with Docker Compose
+# PostgreSQL
 docker-compose up -d
 
-# View logs
-docker-compose logs -f
-
-# Stop services
-docker-compose down
+# MySQL
+docker-compose --profile mysql up -d
 ```
 
-## ☸️ Kubernetes Deployment
-
-### 1. Cluster Preparation
-
+### Production Docker
 ```bash
-# Create namespace
-kubectl create namespace academic-crm
-
-# Apply security configurations
-kubectl apply -f k8s/security/rbac.yaml
+docker build -t academic-platform .
+docker run -p 5000:5000 -e DATABASE_URL="your_db_url" academic-platform
 ```
 
-### 2. Configure Secrets
+## ☁️ Platform-Specific Instructions
 
+### Render
+1. Connect GitHub repository
+2. Render auto-detects `render.yaml`
+3. Database is automatically provisioned
+4. Environment variables are auto-generated
+
+### Fly.io
 ```bash
-# Create database secret
-kubectl create secret generic academic-crm-secrets \
-  --from-literal=DATABASE_URL="postgresql://user:pass@host:5432/db" \
-  --from-literal=SESSION_SECRET="your-session-secret" \
-  --from-literal=OPENAI_API_KEY="sk-your-key" \
-  -n academic-crm
+fly launch
+fly secrets set DATABASE_URL="your_database_url"
+fly secrets set SESSION_SECRET="$(openssl rand -base64 32)"
+fly deploy
 ```
 
-### 3. Deploy with Kustomize
-
+### Vercel
 ```bash
-# Deploy to production
-kubectl apply -k k8s/overlays/production
-
-# Check deployment status
-kubectl get pods -n academic-crm -w
-
-# View application logs
-kubectl logs -n academic-crm -l app.kubernetes.io/name=academic-crm
+vercel
+vercel env add DATABASE_URL
+vercel env add SESSION_SECRET
+vercel --prod
 ```
 
-### 4. Verify Deployment
+## 🔧 Manual Setup
 
+### 1. Install Dependencies
 ```bash
-# Check health endpoint
-kubectl port-forward -n academic-crm svc/academic-crm-service 8080:80
-curl http://localhost:8080/health
-
-# Check database connection
-kubectl exec -n academic-crm deployment/academic-crm-app -- npm run db:test
+npm install
 ```
 
-## ☁️ Cloud Provider Setup
-
-### AWS with Terraform
-
-1. **Configure AWS credentials**:
+### 2. Database Setup
 ```bash
-aws configure
-export AWS_REGION=us-west-2
+# Push schema to database
+npm run db:push
+
+# For development with migrations
+npm run db:generate  # Generate migration files
+npm run db:migrate   # Apply migrations
 ```
 
-2. **Deploy infrastructure**:
+### 3. Build for Production
 ```bash
-cd devops/terraform
-terraform init
-terraform plan -var="environment=prod"
-terraform apply
+npm run build
 ```
 
-3. **Configure kubectl**:
+### 4. Start Production Server
 ```bash
-aws eks update-kubeconfig --region us-west-2 --name academic-crm-prod
+npm start
 ```
 
-4. **Deploy application**:
+## 🚨 Troubleshooting
+
+### Database Connection Issues
+
+**PostgreSQL SSL Issues:**
 ```bash
-# Update image in k8s manifests
-kubectl apply -k k8s/overlays/production
+DATABASE_URL=postgresql://user:pass@host:5432/db?sslmode=require
 ```
 
-### GCP with Cloud Run
-
+**Connection Timeouts:**
 ```bash
-# Build and deploy
-gcloud builds submit --tag gcr.io/PROJECT_ID/academic-crm
-gcloud run deploy academic-crm \
-  --image gcr.io/PROJECT_ID/academic-crm \
-  --platform managed \
-  --region us-central1 \
-  --allow-unauthenticated
+DATABASE_URL=postgresql://user:pass@host:5432/db?connect_timeout=10
 ```
 
-### Azure Container Instances
+### Common Errors
 
+**"DATABASE_URL must be set"**
+- Ensure DATABASE_URL is set in your environment
+- Check .env file exists and is properly formatted
+
+**"Cannot find module 'pg'"**
+- Database drivers are automatically installed based on DATABASE_URL
+- For manual installation: `npm install pg @types/pg`
+
+**"Port already in use"**
+- Change PORT environment variable
+- Kill existing processes: `pkill -f node`
+
+### Platform-Specific Issues
+
+**Render:**
+- Database takes 2-3 minutes to provision
+- Health checks may fail during initial deployment
+
+**Fly.io:**
+- Requires credit card for deployment
+- Some regions may have connectivity issues
+
+**Vercel:**
+- Serverless functions have 10-second timeout
+- Static file serving requires proper routing
+
+## 🔍 Monitoring
+
+### Health Check Endpoint
+```
+GET /api/health
+```
+
+### Database Connection Test
 ```bash
-# Create resource group
-az group create --name academic-crm --location eastus
-
-# Deploy container
-az container create \
-  --resource-group academic-crm \
-  --name academic-crm-app \
-  --image academic-crm:latest \
-  --dns-name-label academic-crm \
-  --ports 5000
+curl http://localhost:5000/api/health
 ```
 
-## 📊 Monitoring & Observability
-
-### Prometheus & Grafana Setup
-
-```bash
-# Deploy monitoring stack
-kubectl apply -f k8s/monitoring/prometheus.yaml
-kubectl apply -f k8s/monitoring/grafana.yaml
-
-# Access Grafana dashboard
-kubectl port-forward -n academic-crm-monitoring svc/grafana 3000:3000
-# Login: admin / (check secret for password)
-```
-
-### Custom Metrics
-
-The application exposes metrics at `/metrics`:
-
-- `academic_crm_uptime_seconds`: Application uptime
-- `academic_crm_memory_usage_bytes`: Memory usage
-- `academic_crm_version_info`: Version information
-
-### Log Aggregation
-
-```bash
-# View aggregated logs
-kubectl logs -n academic-crm -l app.kubernetes.io/name=academic-crm --tail=100
-
-# Stream logs
-kubectl logs -n academic-crm -l app.kubernetes.io/name=academic-crm -f
-```
-
-## 🔒 Security Configuration
-
-### 1. Network Policies
-
-```bash
-# Apply network restrictions
-kubectl apply -f k8s/security/rbac.yaml
-```
-
-### 2. SSL/TLS Configuration
-
-```bash
-# Install cert-manager
-helm repo add jetstack https://charts.jetstack.io
-helm install cert-manager jetstack/cert-manager \
-  --namespace cert-manager \
-  --create-namespace \
-  --set installCRDs=true
-
-# Apply SSL ingress
-kubectl apply -f k8s/base/ingress.yaml
-```
-
-### 3. Security Scanning
-
-```bash
-# Scan container images
-docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
-  aquasec/trivy image academic-crm:latest
-
-# Kubernetes security scan
-kubectl run kube-bench --image=aquasec/kube-bench:latest --restart=Never
-```
-
-## 🔄 CI/CD Pipeline
-
-### GitHub Actions Setup
-
-1. **Configure secrets** in GitHub repository:
-   - `DATABASE_URL`
-   - `SESSION_SECRET`
-   - `OPENAI_API_KEY`
-   - `KUBE_CONFIG` (base64 encoded)
-
-2. **Pipeline triggers**:
-   - Push to `main`: Production deployment
-   - Push to `develop`: Staging deployment
-   - Pull requests: Testing and validation
-
-### Manual Deployment
-
-```bash
-# Using deployment script
-./scripts/deploy.sh production
-
-# Using Ansible
-ansible-playbook devops/ansible/playbooks/deploy.yml \
-  -e env=production \
-  -e tag=v1.0.0
-```
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-#### Pods Not Starting
-
-```bash
-# Check pod events
-kubectl describe pod -n academic-crm <pod-name>
-
-# Check resource limits
-kubectl top pods -n academic-crm
-
-# View detailed logs
-kubectl logs -n academic-crm <pod-name> --previous
-```
-
-#### Database Connection Failed
-
-```bash
-# Test database connectivity
-kubectl exec -n academic-crm deployment/academic-crm-app -- \
-  psql $DATABASE_URL -c "SELECT 1"
-
-# Check database logs
-kubectl logs -n academic-crm deployment/postgres
-```
-
-#### Image Pull Errors
-
-```bash
-# Check image exists
-docker pull academic-crm:latest
-
-# Verify registry credentials
-kubectl get secret regcred -n academic-crm -o yaml
-```
-
-#### Ingress Not Working
-
-```bash
-# Check ingress controller
-kubectl get pods -n ingress-nginx
-
-# Verify DNS resolution
-nslookup your-domain.com
-
-# Check SSL certificate
-kubectl describe certificate -n academic-crm
-```
-
-### Performance Issues
-
-#### High Memory Usage
-
-```bash
-# Check memory metrics
-kubectl top pods -n academic-crm
-
-# Analyze heap dumps
-kubectl exec -n academic-crm deployment/academic-crm-app -- \
-  node --inspect --heap-prof index.js
-```
-
-#### Slow Response Times
-
-```bash
-# Check application metrics
-curl http://your-domain.com/metrics
-
-# Analyze database performance
-kubectl exec -n academic-crm deployment/postgres -- \
-  psql -c "SELECT * FROM pg_stat_activity"
-```
-
-### Recovery Procedures
-
-#### Database Recovery
-
-```bash
-# Restore from backup
-kubectl exec -n academic-crm deployment/postgres -- \
-  psql $DATABASE_URL < backup.sql
-
-# Run migrations
-kubectl exec -n academic-crm deployment/academic-crm-app -- \
-  npm run db:push
-```
-
-#### Application Recovery
-
-```bash
-# Restart deployment
-kubectl rollout restart deployment/academic-crm-app -n academic-crm
-
-# Rollback to previous version
-kubectl rollout undo deployment/academic-crm-app -n academic-crm
-```
-
-## 📈 Scaling Guide
-
-### Horizontal Scaling
-
-```bash
-# Manual scaling
-kubectl scale deployment academic-crm-app --replicas=10 -n academic-crm
-
-# Configure HPA
-kubectl autoscale deployment academic-crm-app \
-  --cpu-percent=70 \
-  --min=3 \
-  --max=20 \
-  -n academic-crm
-```
-
-### Vertical Scaling
-
-```bash
-# Update resource limits
-kubectl patch deployment academic-crm-app -n academic-crm -p \
-  '{"spec":{"template":{"spec":{"containers":[{"name":"academic-crm","resources":{"limits":{"memory":"4Gi","cpu":"2000m"}}}]}}}}'
-```
-
-## 🔧 Maintenance
-
-### Regular Tasks
-
-```bash
-# Update dependencies
-./scripts/install-deps.sh
-
-# Security patches
-kubectl apply -f k8s/security/rbac.yaml
-
-# Database maintenance
-kubectl exec -n academic-crm deployment/postgres -- \
-  psql -c "VACUUM ANALYZE"
-```
-
-### Backup Procedures
-
-```bash
-# Database backup
-kubectl exec -n academic-crm deployment/postgres -- \
-  pg_dump $DATABASE_URL > backup-$(date +%Y%m%d).sql
-
-# Application backup
-kubectl create backup academic-crm-backup-$(date +%Y%m%d)
-```
-
-## 📞 Support
-
-### Getting Help
-
-1. **Check logs**: Application and infrastructure logs
-2. **Review metrics**: Prometheus/Grafana dashboards
-3. **Validate configuration**: Environment variables and secrets
-4. **Test connectivity**: Database and external services
-
-### Resources
-
-- [Kubernetes Documentation](https://kubernetes.io/docs/)
-- [Docker Documentation](https://docs.docker.com/)
-- [Terraform Documentation](https://terraform.io/docs/)
-- [Project Repository](https://github.com/bonaventuresimeon/AcademicCRM)
+## 📝 Migration Notes
+
+### From v1 to v2
+- Updated Drizzle to latest version
+- Added multi-database support
+- Improved deployment configurations
+
+### Breaking Changes
+- Environment variable names unchanged
+- Database schema is backward compatible
+- API endpoints remain the same
+
+## 🆘 Support
+
+For deployment issues:
+1. Check environment variables are set correctly
+2. Verify database connectivity
+3. Check platform-specific logs
+4. Refer to platform documentation
 
 ---
 
-**Note**: This deployment guide covers production-ready configurations. For development environments, simpler setups are available in the main README.
+**Need help?** The deployment script handles most configurations automatically. For custom setups, refer to your platform's documentation.

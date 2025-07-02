@@ -9,6 +9,7 @@ import AuthPage from "@/pages/auth-page";
 import PasswordRecovery from "@/pages/password-recovery";
 import PasswordViewer from "@/pages/password-viewer";
 import NotFound from "@/pages/not-found";
+import { AdvancedFooter } from "./components/advanced-footer";
 
 function Router() {
   return (

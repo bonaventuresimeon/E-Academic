@@ -10,6 +10,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
+import { Logo, LogoIcon } from "@/components/logo";
+import { AdvancedUserProfile } from "@/components/advanced-user-profile";
+import { AdvancedFooter } from "@/components/advanced-footer";
 import {
   Bell,
   BookOpen,
@@ -177,6 +180,7 @@ export default function AdvancedDashboard() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
   const [showProfile, setShowProfile] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
@@ -524,7 +528,17 @@ export default function AdvancedDashboard() {
           {activeTab === 'users' && user?.role === 'admin' && <UsersTab />}
           {/* Add more tab components as needed */}
         </div>
+        
+        {/* Footer */}
+        <AdvancedFooter variant="compact" className="mt-12" />
       </main>
+
+      {/* Advanced User Profile */}
+      <AdvancedUserProfile
+        isOpen={showUserProfile}
+        onClose={() => setShowUserProfile(false)}
+        user={user as any}
+      />
 
       {/* Profile Panel */}
       {showProfile && (
@@ -555,8 +569,8 @@ export default function AdvancedDashboard() {
               </Badge>
             </CardHeader>
             <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full" onClick={() => setActiveTab('profile')}>
-                <User className="w-4 h-4 mr-2" />
+              <Button variant="outline" className="w-full" onClick={() => setShowUserProfile(true)}>
+                <UserIcon className="w-4 h-4 mr-2" />
                 View Profile
               </Button>
               <Button variant="outline" className="w-full" onClick={() => setShowSettings(true)}>

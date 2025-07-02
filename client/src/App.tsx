@@ -4,7 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from "./hooks/use-auth";
 import { ProtectedRoute } from "./lib/protected-route";
-import AdvancedDashboard from "@/pages/advanced-dashboard";
+import ModernDashboard from "@/pages/modern-dashboard";
 import AuthPage from "@/pages/auth-page";
 import PasswordRecovery from "@/pages/password-recovery";
 import PasswordViewer from "@/pages/password-viewer";
@@ -18,9 +18,9 @@ function Router() {
       <Route path="/auth" component={AuthPage} />
       <Route path="/password-recovery" component={PasswordRecovery} />
       
-      {/* Protected advanced dashboard - comprehensive academic management */}
-      <ProtectedRoute path="/" component={AdvancedDashboard} />
-      <ProtectedRoute path="/dashboard" component={AdvancedDashboard} />
+      {/* Protected modern dashboard - EduLearn design */}
+      <ProtectedRoute path="/" component={ModernDashboard} />
+      <ProtectedRoute path="/dashboard" component={ModernDashboard} />
       
       {/* Admin tools */}
       <ProtectedRoute path="/password-viewer" component={PasswordViewer} />

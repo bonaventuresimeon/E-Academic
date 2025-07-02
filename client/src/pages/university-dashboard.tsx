@@ -358,6 +358,14 @@ const UniversityDashboard = () => {
 
   return (
     <div className={cn("min-h-screen transition-colors duration-300", darkMode ? "dark bg-slate-900" : "bg-gray-50")}>
+      {/* Mobile Overlay */}
+      {!sidebarCollapsed && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          onClick={() => setSidebarCollapsed(true)}
+        />
+      )}
+
       {/* University Header/Navbar */}
       <header className={cn(
         "sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300",
@@ -365,36 +373,36 @@ const UniversityDashboard = () => {
           ? "bg-slate-900/95 border-slate-800" 
           : "bg-white/95 border-gray-200"
       )}>
-        <div className="flex items-center justify-between px-6 py-4">
+        <div className="flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
           {/* Logo and University Name */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 md:space-x-4">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className={cn(
-                "lg:hidden",
+                "lg:hidden p-2",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
               <Menu className="w-5 h-5" />
             </Button>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex items-center space-x-2 md:space-x-3">
               <div className={cn(
-                "w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg"
+                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg"
               )}>
-                <GraduationCap className="w-6 h-6 text-white" />
+                <GraduationCap className="w-5 h-5 md:w-6 md:h-6 text-white" />
               </div>
-              <div>
+              <div className="hidden sm:block">
                 <h1 className={cn(
-                  "text-xl font-bold",
+                  "text-lg md:text-xl font-bold",
                   darkMode ? "text-white" : "text-gray-900"
                 )}>
                   University Portal
                 </h1>
                 <p className={cn(
-                  "text-sm",
+                  "text-xs md:text-sm",
                   darkMode ? "text-slate-400" : "text-gray-600"
                 )}>
                   Academic Management System
@@ -403,8 +411,8 @@ const UniversityDashboard = () => {
             </div>
           </div>
 
-          {/* Center Search Bar */}
-          <div className="hidden md:flex flex-1 max-w-md mx-8">
+          {/* Center Search Bar - Hidden on mobile */}
+          <div className="hidden lg:flex flex-1 max-w-md mx-8">
             <div className="relative w-full">
               <Search className={cn(
                 "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
@@ -423,9 +431,9 @@ const UniversityDashboard = () => {
           </div>
 
           {/* Right Side Controls */}
-          <div className="flex items-center space-x-3">
-            {/* Connection Status */}
-            <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 md:space-x-3">
+            {/* Connection Status - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-2">
               {isOnline ? (
                 <Wifi className="w-4 h-4 text-green-500" />
               ) : (
@@ -433,12 +441,25 @@ const UniversityDashboard = () => {
               )}
             </div>
 
+            {/* Mobile Search - Hidden on large screens */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className={cn(
+                "p-2 lg:hidden",
+                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+              )}
+            >
+              <Search className="w-4 h-4" />
+            </Button>
+
             {/* Dark Mode Toggle */}
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setDarkMode(!darkMode)}
               className={cn(
+                "p-2",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
@@ -450,7 +471,7 @@ const UniversityDashboard = () => {
               variant="ghost"
               size="sm"
               className={cn(
-                "relative",
+                "relative p-2",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
@@ -458,11 +479,12 @@ const UniversityDashboard = () => {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </Button>
 
-            {/* Help */}
+            {/* Help - Hidden on mobile */}
             <Button
               variant="ghost"
               size="sm"
               className={cn(
+                "hidden md:flex p-2",
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
@@ -474,15 +496,15 @@ const UniversityDashboard = () => {
               <Button
                 variant="ghost"
                 onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center space-x-2 p-2"
+                className="flex items-center space-x-1 md:space-x-2 p-2"
               >
-                <Avatar className="w-8 h-8">
+                <Avatar className="w-7 h-7 md:w-8 md:h-8">
                   <AvatarImage src="" />
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm">
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-xs md:text-sm">
                     {user?.firstName?.[0] || user?.username?.[0] || 'U'}
                   </AvatarFallback>
                 </Avatar>
-                <div className="hidden lg:block text-left">
+                <div className="hidden md:block text-left">
                   <p className={cn(
                     "text-sm font-medium",
                     darkMode ? "text-white" : "text-gray-900"
@@ -497,7 +519,7 @@ const UniversityDashboard = () => {
                   </p>
                 </div>
                 <ChevronDown className={cn(
-                  "w-4 h-4 transition-transform duration-200",
+                  "w-3 h-3 md:w-4 md:h-4 transition-transform duration-200 hidden sm:block",
                   showProfile && "rotate-180",
                   darkMode ? "text-slate-400" : "text-gray-400"
                 )} />
@@ -575,10 +597,18 @@ const UniversityDashboard = () => {
       </header>
 
       <div className="flex">
+        {/* Mobile Overlay */}
+        {!sidebarCollapsed && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+            onClick={() => setSidebarCollapsed(true)}
+          />
+        )}
+
         {/* University Sidebar */}
         <aside className={cn(
           "fixed left-0 top-[73px] h-[calc(100vh-73px)] transition-all duration-300 z-40 border-r",
-          sidebarCollapsed ? "w-16" : "w-64",
+          sidebarCollapsed ? "w-16 -translate-x-full lg:translate-x-0" : "w-64 translate-x-0",
           darkMode 
             ? "bg-slate-900 border-slate-800" 
             : "bg-white border-gray-200"
@@ -681,22 +711,23 @@ const UniversityDashboard = () => {
         {/* Main Content */}
         <main className={cn(
           "flex-1 transition-all duration-300",
-          sidebarCollapsed ? "ml-16" : "ml-64"
+          "lg:ml-16 xl:ml-64",
+          sidebarCollapsed ? "lg:ml-16" : "lg:ml-64"
         )}>
-          <div className="p-6 space-y-6">
+          <div className="p-4 md:p-6 space-y-4 md:space-y-6">
             {/* Overview Tab */}
             {activeTab === 'overview' && (
               <>
                 {/* Welcome Header */}
                 <div className={cn(
-                  "rounded-xl p-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white"
+                  "rounded-xl p-4 md:p-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-700 text-white"
                 )}>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between space-y-2 sm:space-y-0">
                     <div>
-                      <h2 className="text-2xl font-bold mb-2">
+                      <h2 className="text-xl md:text-2xl font-bold mb-2">
                         Welcome back, {user?.firstName || user?.username}!
                       </h2>
-                      <p className="text-blue-100">
+                      <p className="text-blue-100 text-sm md:text-base">
                         {new Date().toLocaleDateString('en-US', { 
                           weekday: 'long', 
                           year: 'numeric', 
@@ -705,9 +736,9 @@ const UniversityDashboard = () => {
                         })}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm text-blue-100">Current Time</p>
-                      <p className="text-xl font-bold">
+                    <div className="text-left sm:text-right">
+                      <p className="text-xs md:text-sm text-blue-100">Current Time</p>
+                      <p className="text-lg md:text-xl font-bold">
                         {new Date().toLocaleTimeString('en-US', { 
                           hour: '2-digit', 
                           minute: '2-digit' 
@@ -718,7 +749,7 @@ const UniversityDashboard = () => {
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
                   {statsCards.map((card, index) => {
                     const Icon = card.icon;
                     return (
@@ -726,30 +757,30 @@ const UniversityDashboard = () => {
                         "transition-all duration-200 hover:shadow-lg",
                         darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"
                       )}>
-                        <CardContent className="p-6">
-                          <div className="flex items-center justify-between">
-                            <div>
+                        <CardContent className="p-3 md:p-6">
+                          <div className="flex flex-col space-y-2 md:flex-row md:items-center md:justify-between md:space-y-0">
+                            <div className="flex-1">
                               <p className={cn(
-                                "text-sm font-medium",
+                                "text-xs md:text-sm font-medium",
                                 darkMode ? "text-slate-400" : "text-gray-600"
                               )}>
                                 {card.title}
                               </p>
                               <p className={cn(
-                                "text-2xl font-bold mt-2",
+                                "text-lg md:text-2xl font-bold mt-1 md:mt-2",
                                 darkMode ? "text-white" : "text-gray-900"
                               )}>
                                 {card.value}
                               </p>
-                              <p className="text-xs text-green-600 mt-1">
+                              <p className="text-xs text-green-600 mt-1 hidden md:block">
                                 {card.trend}
                               </p>
                             </div>
                             <div className={cn(
-                              "w-12 h-12 rounded-lg flex items-center justify-center",
+                              "w-8 h-8 md:w-12 md:h-12 rounded-lg flex items-center justify-center self-end md:self-auto",
                               card.bgColor
                             )}>
-                              <Icon className={cn("w-6 h-6", card.color)} />
+                              <Icon className={cn("w-4 h-4 md:w-6 md:h-6", card.color)} />
                             </div>
                           </div>
                         </CardContent>
@@ -844,22 +875,22 @@ const UniversityDashboard = () => {
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         {user?.role === 'student' && (
                           <>
-                            <Button className="h-12 bg-blue-600 hover:bg-blue-700 text-white">
+                            <Button className="h-10 md:h-12 bg-blue-600 hover:bg-blue-700 text-white text-sm">
                               <BookOpen className="w-4 h-4 mr-2" />
                               Browse Courses
                             </Button>
-                            <Button variant="outline" className="h-12">
+                            <Button variant="outline" className="h-10 md:h-12 text-sm">
                               <Calendar className="w-4 h-4 mr-2" />
                               View Schedule
                             </Button>
-                            <Button variant="outline" className="h-12">
+                            <Button variant="outline" className="h-10 md:h-12 text-sm">
                               <Upload className="w-4 h-4 mr-2" />
                               Submit Assignment
                             </Button>
-                            <Button variant="outline" className="h-12">
+                            <Button variant="outline" className="h-10 md:h-12 text-sm">
                               <Trophy className="w-4 h-4 mr-2" />
                               Check Grades
                             </Button>
@@ -952,20 +983,21 @@ const UniversityDashboard = () => {
       {/* University Footer */}
       <footer className={cn(
         "border-t mt-8 transition-colors duration-300",
-        sidebarCollapsed ? "ml-16" : "ml-64",
+        "lg:ml-16 xl:ml-64",
+        sidebarCollapsed ? "lg:ml-16" : "lg:ml-64",
         darkMode 
           ? "bg-slate-900 border-slate-800" 
           : "bg-white border-gray-200"
       )}>
-        <div className="px-6 py-4">
+        <div className="px-4 md:px-6 py-3 md:py-4">
           <div className="flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
-            <div className="flex items-center space-x-4 text-sm">
+            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-4 text-xs md:text-sm">
               <span className={cn(
                 darkMode ? "text-slate-400" : "text-gray-600"
               )}>
                 © 2024 University Portal
               </span>
-              <Separator orientation="vertical" className="h-4" />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <span className={cn(
                 darkMode ? "text-slate-400" : "text-gray-600"
               )}>
@@ -973,19 +1005,19 @@ const UniversityDashboard = () => {
               </span>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row items-center space-y-1 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className={cn(
-                  "text-sm",
+                  "text-xs md:text-sm",
                   darkMode ? "text-slate-400" : "text-gray-600"
                 )}>
                   System Status: Online
                 </span>
               </div>
-              <Separator orientation="vertical" className="h-4" />
+              <Separator orientation="vertical" className="h-4 hidden sm:block" />
               <span className={cn(
-                "text-sm",
+                "text-xs md:text-sm",
                 darkMode ? "text-slate-400" : "text-gray-600"
               )}>
                 Last Updated: {new Date().toLocaleTimeString()}

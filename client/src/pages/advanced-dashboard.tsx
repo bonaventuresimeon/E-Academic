@@ -13,7 +13,7 @@ import { Progress } from "@/components/ui/progress";
 import { Logo, LogoIcon } from "@/components/logo";
 import { AdvancedUserProfile } from "@/components/advanced-user-profile";
 import { AdvancedFooter } from "@/components/advanced-footer";
-import { MobileNavbar } from "@/components/mobile-navbar";
+import { ModernMobileNav } from "@/components/modern-mobile-nav";
 import {
   Bell,
   BookOpen,
@@ -323,23 +323,15 @@ export default function AdvancedDashboard() {
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100"
     )}>
-      {/* Mobile Navigation - Only on small screens */}
-      <div className="lg:hidden">
-        <MobileNavbar
-          user={user}
-          onLogout={() => window.location.href = '/api/logout'}
-          onProfileClick={() => setShowUserProfile(true)}
-          onNotificationClick={() => setActiveTab('notifications')}
-        />
-      </div>
+      {/* Modern Mobile Navigation - Only on small screens */}
+      <ModernMobileNav
+        user={user}
+        onLogout={() => window.location.href = '/api/logout'}
+        onProfileClick={() => setShowUserProfile(true)}
+        onNotificationClick={() => setActiveTab('notifications')}
+      />
 
-      {/* Mobile Overlay for Sidebar */}
-      {!sidebarCollapsed && (
-        <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden transition-opacity duration-300"
-          onClick={() => setSidebarCollapsed(true)}
-        />
-      )}
+
 
       {/* Desktop Sidebar - Hidden on mobile */}
       <aside className={cn(

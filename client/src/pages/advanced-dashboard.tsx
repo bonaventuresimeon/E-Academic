@@ -12,8 +12,8 @@ import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
 import { Logo, LogoIcon } from "@/components/logo";
 import { AdvancedUserProfile } from "@/components/advanced-user-profile";
+import { AdvancedNavbar } from "@/components/advanced-navbar";
 import { AdvancedFooter } from "@/components/advanced-footer";
-import { ModernMobileNav } from "@/components/modern-mobile-nav";
 import {
   Bell,
   BookOpen,
@@ -323,12 +323,13 @@ export default function AdvancedDashboard() {
         ? "bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" 
         : "bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100"
     )}>
-      {/* Modern Mobile Navigation - Only on small screens */}
-      <ModernMobileNav
+      {/* Advanced Navbar - Desktop and Mobile */}
+      <AdvancedNavbar
         user={user}
+        darkMode={darkMode}
+        onToggleDarkMode={() => setDarkMode(!darkMode)}
         onLogout={() => window.location.href = '/api/logout'}
         onProfileClick={() => setShowUserProfile(true)}
-        onNotificationClick={() => setActiveTab('notifications')}
       />
 
 
@@ -468,142 +469,56 @@ export default function AdvancedDashboard() {
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className={cn(
-        "transition-all duration-300 min-h-screen",
-        "pt-16 lg:pt-0", // Add top padding for mobile navbar
-        sidebarCollapsed ? "lg:ml-20" : "lg:ml-80"
-      )}>
-        {/* Desktop Top Navigation - Hidden on mobile */}
-        <header className={cn(
-          "hidden lg:block sticky top-0 z-30 border-b transition-colors duration-300 border-slate-200 dark:border-slate-700",
-          "backdrop-blur-xl bg-white/90 dark:bg-slate-900/90"
-        )}>
-          <div className="flex items-center justify-between h-16 px-6">
-            {/* Desktop Sidebar Toggle */}
-            <div className="flex items-center space-x-4">
+      {/* Main Content Area - Properly separated from navbar */}
+      <main className="pt-16 min-h-screen flex flex-col">
+        <div className="flex-1 flex">
+          {/* Desktop Sidebar - Hidden on mobile */}
+          <aside className={cn(
+            "hidden lg:block w-80 border-r transition-all duration-300",
+            "bg-gradient-to-b from-white via-slate-50 to-white",
+            "dark:bg-gradient-to-b dark:from-slate-900 dark:via-slate-800 dark:to-slate-900",
+            "border-slate-200 dark:border-slate-700",
+            sidebarCollapsed && "w-20"
+          )}>
+            {/* Sidebar content will go here */}
+            <div className="p-6">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="mb-4"
               >
                 <Menu className="w-5 h-5" />
               </Button>
+              {/* Sidebar navigation items */}
             </div>
-            
-            {/* Desktop Search */}
-            <div className="flex-1 max-w-xl mx-4">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
-                <Input
-                  placeholder="Search courses, assignments, students..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-slate-50 dark:bg-slate-800 border-0 focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
+          </aside>
 
-            {/* Right Actions */}
-            <div className="flex items-center space-x-3">
-              {/* Notifications */}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowNotifications(!showNotifications)}
-                className="relative"
-              >
-                <Bell className="w-5 h-5" />
-                {notifications && notifications.some(n => !n.isRead) && (
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-                )}
-              </Button>
-
-              {/* Profile */}
-              <Button
-                variant="ghost"
-                onClick={() => setShowProfile(!showProfile)}
-                className="flex items-center space-x-2"
-              >
-                <Avatar className="w-8 h-8">
-                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-sm">
-                    {user?.firstName?.[0] || user?.username?.[0] || 'U'}
-                  </AvatarFallback>
-                </Avatar>
-                <ChevronDown className="w-4 h-4" />
-              </Button>
+          {/* Dashboard Content */}
+          <div className="flex-1 overflow-auto">
+            {/* Dashboard Content Container */}
+            <div className="p-6 max-w-full">
+              {/* Tab Content */}
+              {activeTab === 'overview' && <OverviewTab stats={dashboardStats} user={user} />}
+              {activeTab === 'courses' && <CoursesTab courses={courses} user={user} />}
+              {activeTab === 'assignments' && <AssignmentsTab assignments={assignments} user={user} />}
+              {activeTab === 'grades' && <GradesTab user={user} />}
+              {activeTab === 'analytics' && user?.role === 'lecturer' && <AnalyticsTab />}
+              {activeTab === 'users' && user?.role === 'admin' && <UsersTab />}
             </div>
           </div>
-        </header>
-
-        {/* Dashboard Content */}
-        <div className="p-6">
-          {activeTab === 'overview' && <OverviewTab stats={dashboardStats} user={user} />}
-          {activeTab === 'courses' && <CoursesTab courses={courses} user={user} />}
-          {activeTab === 'assignments' && <AssignmentsTab assignments={assignments} user={user} />}
-          {activeTab === 'grades' && <GradesTab user={user} />}
-          {activeTab === 'analytics' && user?.role === 'lecturer' && <AnalyticsTab />}
-          {activeTab === 'users' && user?.role === 'admin' && <UsersTab />}
-          {/* Add more tab components as needed */}
         </div>
         
-        {/* Footer */}
-        <AdvancedFooter variant="compact" className="mt-12" />
+        {/* Advanced Footer - Separated from main content */}
+        <AdvancedFooter variant="compact" darkMode={darkMode} />
       </main>
 
-      {/* Advanced User Profile */}
+      {/* Advanced User Profile Modal */}
       <AdvancedUserProfile
         isOpen={showUserProfile}
         onClose={() => setShowUserProfile(false)}
         user={user as any}
       />
-
-      {/* Profile Panel */}
-      {showProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-end p-4 pr-8">
-          <div 
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-            onClick={() => setShowProfile(false)}
-          />
-          <Card className="relative w-96 bg-gradient-to-br from-blue-50 via-purple-50 to-indigo-50 dark:from-blue-900/50 dark:via-purple-900/50 dark:to-indigo-900/50 border-2 border-blue-200/50 dark:border-blue-700/50">
-            <CardHeader className="text-center relative">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowProfile(false)}
-                className="absolute top-2 right-2 w-8 h-8 p-0"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-              <Avatar className="w-20 h-20 mx-auto mb-4 ring-4 ring-blue-500/30">
-                <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white text-2xl">
-                  {user?.firstName?.[0] || user?.username?.[0] || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <CardTitle className="text-xl">{user?.firstName || user?.username}</CardTitle>
-              <CardDescription>{user?.email}</CardDescription>
-              <Badge variant="outline" className="mx-auto mt-2 capitalize">
-                {user?.role}
-              </Badge>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Button variant="outline" className="w-full" onClick={() => setShowUserProfile(true)}>
-                <UserIcon className="w-4 h-4 mr-2" />
-                View Profile
-              </Button>
-              <Button variant="outline" className="w-full" onClick={() => setShowSettings(true)}>
-                <Settings className="w-4 h-4 mr-2" />
-                Settings
-              </Button>
-              <Separator />
-              <Button variant="destructive" className="w-full" onClick={handleLogout}>
-                <LogOut className="w-4 h-4 mr-2" />
-                Sign Out
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      )}
     </div>
   );
 }

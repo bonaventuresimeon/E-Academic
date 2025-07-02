@@ -431,5 +431,335 @@ export function registerRoutes(app: express.Express) {
     }
   });
 
+  // Advanced Dashboard API Routes
+  app.get("/api/dashboard/stats", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      const userId = req.user.id;
+      const userRole = req.user.role;
+
+      // Get basic stats
+      const userStats = await storage.getUserStats();
+      const courseStats = await storage.getCourseStats();
+
+      // Get user-specific stats based on role
+      let stats = {
+        totalCourses: courseStats.totalCourses,
+        totalAssignments: 0,
+        totalSubmissions: 0,
+        totalQuizzes: 0,
+        totalTests: 0,
+        completionRate: 0,
+        averageGrade: 0,
+        upcomingDeadlines: 0,
+        recentActivity: 0,
+        ...userStats
+      };
+
+      if (userRole === 'student') {
+        const enrollments = await storage.getEnrollmentsByStudent(userId);
+        const submissions = await storage.getSubmissionsByStudent(userId);
+        
+        stats.totalCourses = enrollments.length;
+        stats.totalSubmissions = submissions.length;
+        
+        // Calculate average grade from submissions
+        const gradedSubmissions = submissions.filter(s => s.grade !== null);
+        if (gradedSubmissions.length > 0) {
+          stats.averageGrade = gradedSubmissions.reduce((acc, s) => acc + Number(s.grade), 0) / gradedSubmissions.length;
+        }
+        
+        stats.completionRate = submissions.length > 0 ? (gradedSubmissions.length / submissions.length) * 100 : 0;
+      }
+
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  app.get("/api/courses/extended", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      const userId = req.user.id;
+      const userRole = req.user.role;
+
+      let courses;
+      
+      if (userRole === 'student') {
+        const enrollments = await storage.getEnrollmentsByStudent(userId);
+        courses = await Promise.all(
+          enrollments.map(async (enrollment) => {
+            const course = await storage.getCourse(enrollment.courseId);
+            if (!course) return null;
+            
+            const lecturer = course.lecturerId ? await storage.getUser(course.lecturerId) : null;
+            const allEnrollments = await storage.getEnrollmentsByCourse(course.id);
+            const assignments = await storage.getAssignmentsByCourse(course.id);
+            
+            return {
+              ...course,
+              lecturer,
+              enrollmentCount: allEnrollments.length,
+              isEnrolled: true,
+              assignments
+            };
+          })
+        );
+        courses = courses.filter(Boolean);
+      } else if (userRole === 'lecturer') {
+        const allCourses = await storage.getAllCourses();
+        courses = await Promise.all(
+          allCourses
+            .filter(course => course.lecturerId === userId)
+            .map(async (course) => {
+              const lecturer = await storage.getUser(course.lecturerId!);
+              const enrollments = await storage.getEnrollmentsByCourse(course.id);
+              const assignments = await storage.getAssignmentsByCourse(course.id);
+              
+              return {
+                ...course,
+                lecturer,
+                enrollmentCount: enrollments.length,
+                isEnrolled: false,
+                assignments
+              };
+            })
+        );
+      } else {
+        const allCourses = await storage.getAllCourses();
+        courses = await Promise.all(
+          allCourses.map(async (course) => {
+            const lecturer = course.lecturerId ? await storage.getUser(course.lecturerId) : null;
+            const enrollments = await storage.getEnrollmentsByCourse(course.id);
+            const assignments = await storage.getAssignmentsByCourse(course.id);
+            
+            return {
+              ...course,
+              lecturer,
+              enrollmentCount: enrollments.length,
+              isEnrolled: false,
+              assignments
+            };
+          })
+        );
+      }
+
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching extended courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
+  app.get("/api/assignments/extended", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      const userId = req.user.id;
+      const userRole = req.user.role;
+
+      let assignments;
+
+      if (userRole === 'student') {
+        const enrollments = await storage.getEnrollmentsByStudent(userId);
+        const courseIds = enrollments.map(e => e.courseId);
+        
+        assignments = [];
+        for (const courseId of courseIds) {
+          const courseAssignments = await storage.getAssignmentsByCourse(courseId);
+          const course = await storage.getCourse(courseId);
+          
+          for (const assignment of courseAssignments) {
+            const submission = await storage.getSubmission(assignment.id, userId);
+            
+            // Calculate time remaining
+            let timeRemaining = null;
+            if (assignment.dueDate) {
+              const now = new Date();
+              const due = new Date(assignment.dueDate);
+              const diffMs = due.getTime() - now.getTime();
+              const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+              const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+              
+              timeRemaining = {
+                days: Math.abs(diffDays),
+                hours: Math.abs(diffHours),
+                isOverdue: diffMs < 0
+              };
+            }
+            
+            assignments.push({
+              ...assignment,
+              course,
+              submission,
+              timeRemaining
+            });
+          }
+        }
+      } else if (userRole === 'lecturer') {
+        const allCourses = await storage.getAllCourses();
+        const userCourses = allCourses.filter(course => course.lecturerId === userId);
+        
+        assignments = [];
+        for (const course of userCourses) {
+          const courseAssignments = await storage.getAssignmentsByCourse(course.id);
+          
+          for (const assignment of courseAssignments) {
+            assignments.push({
+              ...assignment,
+              course
+            });
+          }
+        }
+      } else {
+        // Admin can see all assignments
+        const allCourses = await storage.getAllCourses();
+        assignments = [];
+        
+        for (const course of allCourses) {
+          const courseAssignments = await storage.getAssignmentsByCourse(course.id);
+          
+          for (const assignment of courseAssignments) {
+            assignments.push({
+              ...assignment,
+              course
+            });
+          }
+        }
+      }
+
+      res.json(assignments);
+    } catch (error) {
+      console.error("Error fetching extended assignments:", error);
+      res.status(500).json({ message: "Failed to fetch assignments" });
+    }
+  });
+
+  app.get("/api/notifications", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Mock notifications for now - in a real app, this would come from a notifications table
+      const notifications = [
+        {
+          id: '1',
+          type: 'assignment',
+          title: 'New Assignment',
+          message: 'Mathematics Assignment 3 has been posted',
+          timestamp: new Date(Date.now() - 1000 * 60 * 30), // 30 minutes ago
+          isRead: false,
+          priority: 'medium',
+          actionUrl: '/assignments/3'
+        },
+        {
+          id: '2',
+          type: 'grade',
+          title: 'Grade Posted',
+          message: 'Your Physics Assignment 2 has been graded',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2), // 2 hours ago
+          isRead: false,
+          priority: 'high',
+          actionUrl: '/grades'
+        },
+        {
+          id: '3',
+          type: 'announcement',
+          title: 'Class Announcement',
+          message: 'Computer Science lecture moved to Room 101',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+          isRead: true,
+          priority: 'low'
+        }
+      ];
+
+      res.json(notifications);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.get("/api/activity/recent", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    if (!isAuthenticated(req)) {
+      res.status(401).json({ message: "Authentication required" });
+      return;
+    }
+
+    try {
+      // Mock recent activity - in a real app, this would track user actions
+      const activities = [
+        {
+          id: '1',
+          type: 'submission',
+          title: 'Assignment Submitted',
+          description: 'Mathematics Assignment 2 - Linear Algebra',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60), // 1 hour ago
+          metadata: { courseId: 1, assignmentId: 2 }
+        },
+        {
+          id: '2',
+          type: 'enrollment',
+          title: 'Course Enrolled',
+          description: 'Advanced Computer Science',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 6), // 6 hours ago
+          metadata: { courseId: 3 }
+        },
+        {
+          id: '3',
+          type: 'grade',
+          title: 'Grade Received',
+          description: 'Physics Assignment 1 - Grade: A',
+          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24), // 1 day ago
+          metadata: { grade: 'A', assignmentId: 1 }
+        }
+      ];
+
+      res.json(activities);
+    } catch (error) {
+      console.error("Error fetching recent activity:", error);
+      res.status(500).json({ message: "Failed to fetch recent activity" });
+    }
+  });
+
+  app.get("/api/user/preferences", requireAuth, async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Mock user preferences - in a real app, this would be stored in the database
+      const preferences = {
+        theme: 'system',
+        language: 'en',
+        notifications: {
+          email: true,
+          push: false,
+          desktop: true
+        },
+        dashboard: {
+          compactMode: false,
+          showGrades: true,
+          defaultTab: 'overview'
+        },
+        privacy: {
+          profileVisibility: 'public',
+          showActivity: true
+        }
+      };
+
+      res.json(preferences);
+    } catch (error) {
+      console.error("Error fetching user preferences:", error);
+      res.status(500).json({ message: "Failed to fetch user preferences" });
+    }
+  });
+
   return app;
 }

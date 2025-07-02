@@ -244,7 +244,11 @@ const UniversityDashboard = () => {
       );
     }
 
-    baseItems.push({ id: 'settings', label: 'Settings', icon: Settings, roles: ['student', 'lecturer', 'admin'] });
+    // Add new items for mini sidebar design
+    baseItems.push(
+      { id: 'notifications', label: 'Notifications', icon: Bell, count: 3, roles: ['student', 'lecturer', 'admin'] },
+      { id: 'settings', label: 'Settings', icon: Settings, roles: ['student', 'lecturer', 'admin'] }
+    );
 
     return baseItems.filter(item => item.roles.includes(user?.role || 'student'));
   };
@@ -387,16 +391,16 @@ const UniversityDashboard = () => {
         />
       )}
 
-      {/* University Header/Navbar */}
+      {/* Mini Navigation Bar */}
       <header className={cn(
         "sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300",
         darkMode 
           ? "bg-slate-900/95 border-slate-800" 
           : "bg-white/95 border-gray-200"
       )}>
-        <div className="flex items-center justify-between h-16 px-3 md:px-6">
+        <div className="flex items-center justify-between h-16 px-4 lg:px-6">
           {/* Left Side - Menu Button and Logo */}
-          <div className="flex items-center space-x-2 flex-1 min-w-0">
+          <div className="flex items-center space-x-3">
             <Button
               variant="ghost"
               size="sm"
@@ -409,51 +413,45 @@ const UniversityDashboard = () => {
               <Menu className="w-5 h-5" />
             </Button>
             
-            <div className="flex items-center space-x-2 min-w-0">
+            <div className="flex items-center space-x-3">
               <div className={cn(
-                "w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
+                "w-10 h-10 rounded-lg flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 shadow-lg shrink-0"
               )}>
-                <GraduationCap className="w-4 h-4 md:w-6 md:h-6 text-white" />
+                <GraduationCap className="w-6 h-6 text-white" />
               </div>
-              <div className="hidden md:block min-w-0">
+              <div className="hidden sm:block">
                 <h1 className={cn(
-                  "text-sm lg:text-xl font-bold truncate",
+                  "text-lg font-bold",
                   darkMode ? "text-white" : "text-gray-900"
                 )}>
-                  University Portal
+                  Academic University
                 </h1>
-                <p className={cn(
-                  "text-xs lg:text-sm truncate",
-                  darkMode ? "text-slate-400" : "text-gray-600"
-                )}>
-                  Academic Management System
-                </p>
               </div>
             </div>
           </div>
 
-          {/* Center Search Bar - Hidden on mobile */}
-          <div className="hidden lg:flex flex-1 max-w-md mx-8">
-            <div className="relative w-full">
-              <Search className={cn(
-                "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
-                darkMode ? "text-slate-400" : "text-gray-400"
-              )} />
-              <Input
-                placeholder="Search courses, assignments, students..."
-                className={cn(
-                  "pl-10 border-0 shadow-sm",
-                  darkMode 
-                    ? "bg-slate-800 text-white placeholder-slate-400 focus:bg-slate-700" 
-                    : "bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white"
-                )}
-              />
+          {/* Right Side - Search and Profile */}
+          <div className="flex items-center space-x-3">
+            {/* Desktop Search Bar */}
+            <div className="hidden lg:block w-80">
+              <div className="relative">
+                <Search className={cn(
+                  "absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4",
+                  darkMode ? "text-slate-400" : "text-gray-400"
+                )} />
+                <Input
+                  placeholder="Search courses, assignments, students..."
+                  className={cn(
+                    "pl-10 border-0 shadow-sm",
+                    darkMode 
+                      ? "bg-slate-800 text-white placeholder-slate-400 focus:bg-slate-700" 
+                      : "bg-gray-100 text-gray-900 placeholder-gray-500 focus:bg-white"
+                  )}
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Right Side Controls */}
-          <div className="flex items-center space-x-1">
-            {/* Mobile Search Button - Hidden on large screens */}
+            {/* Mobile Search Button */}
             <Button
               variant="ghost"
               size="sm"
@@ -463,33 +461,7 @@ const UniversityDashboard = () => {
                 darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
               )}
             >
-              <Search className="w-4 h-4" />
-            </Button>
-
-            {/* Dark Mode Toggle */}
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDarkMode(!darkMode)}
-              className={cn(
-                "p-2 shrink-0",
-                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              {darkMode ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
-            </Button>
-
-            {/* Notifications */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className={cn(
-                "relative p-2 shrink-0",
-                darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
-              )}
-            >
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+              <Search className="w-5 h-5" />
             </Button>
 
             {/* User Profile */}
@@ -526,17 +498,17 @@ const UniversityDashboard = () => {
                 )} />
               </Button>
 
-              {/* Profile Dropdown */}
+              {/* Simplified Profile Dropdown */}
               {showProfile && (
                 <div className={cn(
-                  "absolute right-0 top-full mt-2 w-64 rounded-lg shadow-lg border z-50",
+                  "absolute right-0 top-full mt-2 w-56 rounded-lg shadow-lg border z-50",
                   darkMode 
-                    ? "bg-slate-800 border-slate-700" 
+                    ? "bg-slate-900 border-slate-800" 
                     : "bg-white border-gray-200"
                 )}>
-                  <div className="p-4">
+                  <div className="p-4 border-b border-slate-700">
                     <div className="flex items-center space-x-3">
-                      <Avatar className="w-12 h-12">
+                      <Avatar className="w-10 h-10">
                         <AvatarFallback className="bg-gradient-to-br from-blue-600 to-purple-600 text-white">
                           {user?.firstName?.[0] || user?.username?.[0] || 'U'}
                         </AvatarFallback>
@@ -546,44 +518,41 @@ const UniversityDashboard = () => {
                           "font-medium",
                           darkMode ? "text-white" : "text-gray-900"
                         )}>
-                          {user?.firstName} {user?.lastName}
+                          {user?.firstName || user?.username}
                         </p>
                         <p className={cn(
                           "text-sm",
-                          darkMode ? "text-slate-400" : "text-gray-500"
+                          darkMode ? "text-slate-400" : "text-gray-600"
                         )}>
                           {user?.email}
                         </p>
-                        <Badge variant="outline" className="mt-1 capitalize">
-                          {user?.role}
-                        </Badge>
                       </div>
                     </div>
                   </div>
                   
-                  <Separator className={darkMode ? "bg-slate-700" : "bg-gray-200"} />
-                  
                   <div className="p-2">
                     <Button
                       variant="ghost"
-                      className="w-full justify-start"
+                      size="sm"
+                      className={cn(
+                        "w-full justify-start text-sm",
+                        darkMode ? "text-slate-300 hover:text-white hover:bg-slate-800" : "text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+                      )}
                       onClick={() => setActiveTab('profile')}
                     >
                       <UserIcon className="w-4 h-4 mr-2" />
-                      View Profile
+                      Profile
                     </Button>
+                    <Separator className={cn(
+                      "my-2",
+                      darkMode ? "bg-slate-700" : "bg-gray-200"
+                    )} />
                     <Button
                       variant="ghost"
-                      className="w-full justify-start"
-                      onClick={() => setActiveTab('settings')}
-                    >
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </Button>
-                    <Separator className={cn("my-2", darkMode ? "bg-slate-700" : "bg-gray-200")} />
-                    <Button
-                      variant="ghost"
-                      className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50"
+                      size="sm"
+                      className={cn(
+                        "w-full justify-start text-sm text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                      )}
                       onClick={handleLogout}
                     >
                       <LogOut className="w-4 h-4 mr-2" />
@@ -701,8 +670,28 @@ const UniversityDashboard = () => {
               </div>
             </ScrollArea>
 
-            {/* Sidebar Toggle */}
-            <div className="p-3 border-t border-slate-800">
+            {/* Sidebar Footer */}
+            <div className={cn(
+              "p-3 border-t",
+              darkMode ? "border-slate-800" : "border-gray-200"
+            )}>
+              {/* Dark Mode Toggle */}
+              {!sidebarCollapsed && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setDarkMode(!darkMode)}
+                  className={cn(
+                    "w-full mb-2 justify-start",
+                    darkMode ? "text-slate-400 hover:text-white" : "text-gray-600 hover:text-gray-900"
+                  )}
+                >
+                  {darkMode ? <Sun className="w-4 h-4 mr-2" /> : <Moon className="w-4 h-4 mr-2" />}
+                  {darkMode ? 'Light Mode' : 'Dark Mode'}
+                </Button>
+              )}
+              
+              {/* Sidebar Toggle */}
               <Button
                 variant="ghost"
                 size="sm"
@@ -955,8 +944,132 @@ const UniversityDashboard = () => {
               </>
             )}
 
-            {/* Other tabs - placeholder content */}
-            {activeTab !== 'overview' && (
+            {/* Notifications Tab */}
+            {activeTab === 'notifications' && (
+              <Card className={cn(
+                darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"
+              )}>
+                <CardHeader>
+                  <CardTitle className={cn(
+                    "flex items-center space-x-2",
+                    darkMode ? "text-white" : "text-gray-900"
+                  )}>
+                    <Bell className="w-5 h-5" />
+                    <span>Notifications</span>
+                    <Badge variant="secondary" className="ml-2">3</Badge>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {/* Sample Notifications */}
+                    <div className={cn(
+                      "p-4 rounded-lg border-l-4 border-blue-500",
+                      darkMode ? "bg-slate-700/50" : "bg-blue-50"
+                    )}>
+                      <div className="flex items-start space-x-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center",
+                          darkMode ? "bg-blue-600" : "bg-blue-100"
+                        )}>
+                          <FileText className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={cn(
+                            "font-medium",
+                            darkMode ? "text-white" : "text-gray-900"
+                          )}>
+                            New Assignment Due
+                          </h4>
+                          <p className={cn(
+                            "text-sm mt-1",
+                            darkMode ? "text-slate-400" : "text-gray-600"
+                          )}>
+                            Mathematics Assignment #3 is due in 2 days
+                          </p>
+                          <p className={cn(
+                            "text-xs mt-2",
+                            darkMode ? "text-slate-500" : "text-gray-500"
+                          )}>
+                            2 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={cn(
+                      "p-4 rounded-lg border-l-4 border-green-500",
+                      darkMode ? "bg-slate-700/50" : "bg-green-50"
+                    )}>
+                      <div className="flex items-start space-x-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center",
+                          darkMode ? "bg-green-600" : "bg-green-100"
+                        )}>
+                          <Trophy className="w-4 h-4 text-green-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={cn(
+                            "font-medium",
+                            darkMode ? "text-white" : "text-gray-900"
+                          )}>
+                            Grade Posted
+                          </h4>
+                          <p className={cn(
+                            "text-sm mt-1",
+                            darkMode ? "text-slate-400" : "text-gray-600"
+                          )}>
+                            Your Physics Lab Report has been graded: A-
+                          </p>
+                          <p className={cn(
+                            "text-xs mt-2",
+                            darkMode ? "text-slate-500" : "text-gray-500"
+                          )}>
+                            5 hours ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={cn(
+                      "p-4 rounded-lg border-l-4 border-yellow-500",
+                      darkMode ? "bg-slate-700/50" : "bg-yellow-50"
+                    )}>
+                      <div className="flex items-start space-x-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-full flex items-center justify-center",
+                          darkMode ? "bg-yellow-600" : "bg-yellow-100"
+                        )}>
+                          <Calendar className="w-4 h-4 text-yellow-600" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className={cn(
+                            "font-medium",
+                            darkMode ? "text-white" : "text-gray-900"
+                          )}>
+                            Class Schedule Update
+                          </h4>
+                          <p className={cn(
+                            "text-sm mt-1",
+                            darkMode ? "text-slate-400" : "text-gray-600"
+                          )}>
+                            Chemistry Lab moved to Room 301 this week
+                          </p>
+                          <p className={cn(
+                            "text-xs mt-2",
+                            darkMode ? "text-slate-500" : "text-gray-500"
+                          )}>
+                            1 day ago
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+        {/* Other tabs - placeholder content */}
+            {activeTab !== 'overview' && activeTab !== 'notifications' && (
               <Card className={cn(
                 darkMode ? "bg-slate-800 border-slate-700" : "bg-white border-gray-200"
               )}>

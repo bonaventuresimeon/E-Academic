@@ -299,8 +299,8 @@ export default function AdvancedDashboard() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <GraduationCap className="w-8 h-8 text-white" />
+            <div className="mx-auto mb-4">
+              <Logo size="lg" />
             </div>
             <CardTitle>Welcome to Academic-CRM</CardTitle>
             <CardDescription>Please log in to access your dashboard</CardDescription>
@@ -347,15 +347,15 @@ export default function AdvancedDashboard() {
           <div className="flex items-center justify-between">
             {!sidebarCollapsed && (
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <GraduationCap className="w-6 h-6 text-white" />
-                </div>
+                <Logo size="sm" className="flex-shrink-0" />
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    Academic-CRM
-                  </h1>
                   <p className="text-xs text-slate-500 dark:text-slate-400">Advanced Dashboard</p>
                 </div>
+              </div>
+            )}
+            {sidebarCollapsed && (
+              <div className="flex justify-center">
+                <LogoIcon size="sm" className="flex-shrink-0" />
               </div>
             )}
             <Button
@@ -473,8 +473,23 @@ export default function AdvancedDashboard() {
         {/* Top Navigation */}
         <header className="sticky top-0 z-30 backdrop-blur-xl border-b transition-colors duration-300 bg-white/90 dark:bg-slate-900/90 border-slate-200 dark:border-slate-700">
           <div className="flex items-center justify-between h-16 px-6">
+            {/* Mobile Logo & Menu */}
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="lg:hidden"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
+              <div className="lg:hidden">
+                <LogoIcon size="sm" />
+              </div>
+            </div>
+            
             {/* Search */}
-            <div className="flex-1 max-w-xl">
+            <div className="flex-1 max-w-xl mx-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <Input

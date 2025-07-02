@@ -395,8 +395,8 @@ const UniversityDashboard = () => {
       <header className={cn(
         "sticky top-0 z-50 border-b backdrop-blur-sm transition-colors duration-300",
         darkMode 
-          ? "bg-slate-900/95 border-slate-800" 
-          : "bg-white/95 border-gray-200"
+          ? "bg-gradient-to-r from-slate-900/98 via-slate-800/98 to-slate-900/98 border-slate-700" 
+          : "bg-gradient-to-r from-white/98 via-gray-50/98 to-white/98 border-gray-200"
       )}>
         <div className="flex items-center h-16 px-4 lg:px-6">
           {/* Mobile Layout */}

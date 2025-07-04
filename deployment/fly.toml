@@ -3,25 +3,30 @@ primary_region = "iad"
 
 [build]
   builder = "heroku/buildpacks:20"
+  buildpacks = ["heroku/nodejs"]
 
 [env]
   NODE_ENV = "production"
   PORT = "8080"
+  NODE_OPTIONS = "--max-old-space-size=1024"
 
 [http_service]
   internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
-  min_machines_running = 0
+  min_machines_running = 1
+  max_machines_running = 3
   processes = ["app"]
 
-[[http_service.checks]]
-  grace_period = "10s"
-  interval = "30s"
-  method = "GET"
-  timeout = "5s"
-  path = "/api/health"
+  [[http_service.checks]]
+    grace_period = "10s"
+    interval = "30s"
+    method = "GET"
+    timeout = "5s"
+    path = "/api/health"
+    protocol = "http"
+    tls_skip_verify = false
 
 [processes]
   app = "npm start"
@@ -29,3 +34,10 @@ primary_region = "iad"
 [[statics]]
   guest_path = "/app/dist"
   url_prefix = "/assets/"
+
+[[mounts]]
+  source = "academic_data_volume"
+  destination = "/app/uploads"
+
+[deploy]
+  release_command = "npm run db:push"

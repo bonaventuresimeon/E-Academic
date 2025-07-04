@@ -1,5 +1,5 @@
 # fly.toml app configuration file
-app = "academic-crm"
+app = "e_academic"
 primary_region = "iad"
 
 [build]

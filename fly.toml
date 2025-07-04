@@ -30,5 +30,5 @@ primary_region = "iad"
   cpus = 1
 
 [[mounts]]
-  source = "academic_crm_data"
+  source = "e_academic_data"
   destination = "/data"
